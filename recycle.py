@@ -5,7 +5,7 @@ from random import shuffle
 import schedule
 import os
 
-SUSPEND_FACTOR = 7
+SUSPEND_FACTOR = 4
 
 database = Database()
 utils = Utils()
