@@ -47,7 +47,7 @@ def init(accs):
 def login(network, account, retrys=0):
     if retrys > 20:
         utils.thread_error("Login failed on max attempts, killing account")
-        return None, None
+        return None, None, None
 
     try:
         login_res = network.login(account["email"], account["password"])
@@ -59,7 +59,7 @@ def login(network, account, retrys=0):
     if not login_res.ok:
         utils.thread_warn("Login failed")
 
-        return None, None
+        return None, None, None
     else:
         if retrys != 0:
             utils.thread_log("Successfully logged into anaccount after retry")
