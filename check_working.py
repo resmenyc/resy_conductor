@@ -19,6 +19,12 @@ def init(accs):
         num = 0
         delete_accs = 0
         for account in accs:
+            # patch bad names
+            if len(account["first_name"]) <= 4:
+                database.delete_account({"email": account["email"]})
+                num += 1
+                continue
+            
             network = Network(proxies.get_proxy())
             auth_token, payment_method_id, is_acc_usable = login(network, account)
 
