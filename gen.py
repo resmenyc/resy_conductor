@@ -24,6 +24,7 @@ load_dotenv()
 database = Database()
 proxies = Proxies()
 aesCipher = AESCipher(os.getenv("ENCRYPTION_KEY"))
+domains = []
 
 RESY_UA = "Resy/2.76.1 (com.resy.ResyApp; build:4977; iOS 17.3.0) Alamofire/5.8.0"
 STRIPE_UA = "Resy/4977 CFNetwork/1492.0.1 Darwin/23.3.0"
@@ -90,11 +91,12 @@ def gen_password():
     return f"${password}"
 
 
-def gen(num_accs, fake_domain, acc_type):
+def gen(num_accs, acc_type):
     x = 0
     for i in range(num_accs):
         s = requests.Session()
 
+        fake_domain = choice(domains)
         fake = Faker()
         name = fake.name()
         first_name = name.split(" ")[0]
@@ -296,7 +298,9 @@ if __name__ == "__main__":
     else:
         acc_type = "normal"
 
-    fake_domain = os.getenv("DOMAIN")
+    fake_domains = os.getenv("DOMAIN")
+    for domain in fake_domains.split(","):
+        domains.append(domain)
 
     x = 0
 
@@ -308,7 +312,6 @@ if __name__ == "__main__":
             name=thread_id,
             args=(
                 num_accs,
-                fake_domain,
                 acc_type,
             ),
         )
