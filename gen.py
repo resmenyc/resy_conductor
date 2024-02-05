@@ -14,6 +14,7 @@ from termcolor import colored
 import colorama
 from database import Database
 from aesCipher import AESCipher
+from proxies import Proxies
 import time
 
 colorama.init()
@@ -22,10 +23,9 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 load_dotenv()
 database = Database()
+proxies = Proxies()
 aesCipher = AESCipher(os.getenv("ENCRYPTION_KEY"))
 
-
-PROXIES = ""
 RESY_UA = "Resy/2.76.1 (com.resy.ResyApp; build:4977; iOS 17.3.0) Alamofire/5.8.0"
 STRIPE_UA = "Resy/4977 CFNetwork/1492.0.1 Darwin/23.3.0"
 STRIPE_P_UA = "stripe-ios/23.18.0; variant.legacy; PaymentSheet"
@@ -57,19 +57,6 @@ def thread_success(message):
 
 def thread_print(message):
     print(f"[{threading.current_thread().name}] <{datetime.utcnow()}> {message}")
-
-
-if os.getenv("DC_PROXY"):
-    proxy_parts = os.getenv("DC_PROXY").split(":")
-
-    valid_proxy = f"{proxy_parts[2]}:{proxy_parts[3]}@{proxy_parts[0]}:{proxy_parts[1]}"
-
-    formatted_proxy = {
-        "http": "http://" + valid_proxy + "/",
-        "https": "http://" + valid_proxy + "/",
-    }
-
-    PROXIES = formatted_proxy
 
 
 def gen_password():
@@ -196,7 +183,7 @@ def create(s, first_name, last_name, email, password, phone_num, retry=False):
         "password": password,
     }
 
-    res = s.post(url, headers=headers, data=payload, proxies=PROXIES, verify=False)
+    res = s.post(url, headers=headers, data=payload, proxies=proxies.get_proxy(), verify=False)
     if res.status_code != 201:
         return None
 
@@ -220,7 +207,7 @@ def add_payment_info(s, token):
         "authorization": 'ResyAPI api_key="AIcdK2rLXG6TYwJseSbmrBAy3RP81ocd"',
     }
 
-    res = s.post(url, headers=headers, proxies=PROXIES, verify=False)
+    res = s.post(url, headers=headers, proxies=proxies.get_proxy(), verify=False)
 
     client_secret = res.json()["client_secret"]
     client_id = client_secret.split("_secret")[0]
@@ -275,7 +262,7 @@ def add_payment_info(s, token):
     }
 
     res3 = requests.post(
-        url3, data=payload3, headers=headers3, proxies=PROXIES, verify=False
+        url3, data=payload3, headers=headers3, proxies=proxies.get_proxy(), verify=False
     )
 
 
