@@ -25,9 +25,9 @@ class Database:
     def get_db(self):
         return self.db.resme
 
-    def get_accounts(self):
+    def get_accounts(self, query={}):
         # TODO: only load accounts marked as usable
-        accs = self.get_db().resy_accounts.find()
+        accs = self.get_db().resy_accounts.find(query)
         accs = loads(dumps(accs))
 
         for acc in accs:
@@ -42,6 +42,10 @@ class Database:
     def update_account(self, query, exec):
         collection = self.get_db().resy_accounts
         collection.update_one(query, exec)
+
+    def update_accounts(self, query, exec):
+        collection = self.get_db().resy_accounts
+        collection.update_many(query, exec)
 
     def upload_account(self, account):
         collection = self.get_db().resy_accounts
