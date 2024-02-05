@@ -36,7 +36,7 @@ def gen_email(first_name, last_name, fake_domain):
     faker_email = fake.email()
 
     base_email_prefix = faker_email.split("@")[0]
-    email = f"{first_name}{base_email_prefix}@{fake_domain}"
+    email = f"{first_name}{base_email_prefix}{randint(10, 99)}@{fake_domain}"
 
     return email
 
@@ -157,6 +157,8 @@ def write_account_to_db(email, password, first_name, last_name, phone_num, acc_t
         "active": True,
         "created_at": time.time(),
     }
+    
+    print(account)
 
     database.upload_account(account)
 
@@ -302,6 +304,7 @@ if __name__ == "__main__":
     for domain in fake_domains.split(","):
         domains.append(domain)
 
+    print(domains)
     x = 0
 
     for i in range(num_threads):
