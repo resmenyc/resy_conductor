@@ -7,6 +7,8 @@ from proxies import Proxies
 import threading
 from network import Network
 from random import shuffle
+import schedule
+import os
 
 database = Database()
 utils = Utils()
@@ -103,10 +105,7 @@ def split_list(a_list):
     return a_list[:half], a_list[half:]
 
 
-if __name__ == '__main__':
-    utils.thread_log("Script to iterate over the DB and check all the accounts")
-    input("\nPress enter to start, this will take a while\n")
-
+def init():
     accs1234, accs5678 = split_list(accounts)
     accs12, accs34 = split_list(accs1234)
     accs56, accs78 = split_list(accs5678)
@@ -132,3 +131,16 @@ if __name__ == '__main__':
     t6.start()
     t7.start()
     t8.start()
+
+if __name__ == "__main__":
+    utils.thread_log("Script to iterate over the DB and check all the accounts\n")
+    utils.thread_log("Running every sunday at 2:30am")
+
+    schedule.every().sunday.at("02:30", "America/New_York").do(init)
+    
+    if os.getenv("DEBUG"):
+        init()
+
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
