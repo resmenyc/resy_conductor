@@ -39,7 +39,7 @@ def init(accs):
 
             num += 1
             utils.thread_log(f"Checked account {num}/{len(accs)}")
-            time.sleep(1)
+            # time.sleep(1)
 
         print()
         utils.thread_success(f"Finished checking {len(accounts)} accounts, deleted {delete_accs}")
