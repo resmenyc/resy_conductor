@@ -1,4 +1,3 @@
-source .venv/bin/activate
 git fetch
 git pull origin main
 pip3 install -r requirements
