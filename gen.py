@@ -298,7 +298,7 @@ if __name__ == "__main__":
     else:
         acc_type = "normal"
 
-    fake_domains = os.getenv("DOMAIN")
+    fake_domains = os.getenv("DOMAINS")
     for domain in fake_domains.split(","):
         domains.append(domain)
 
