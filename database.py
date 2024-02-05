@@ -38,7 +38,11 @@ class Database:
     def delete_account(self, query):
         collection = self.get_db().resy_accounts
         collection.delete_one(query)
-    
+
     def update_account(self, query, exec):
         collection = self.get_db().resy_accounts
         collection.update_one(query, exec)
+
+    def upload_account(self, account):
+        collection = self.get_db().resy_accounts
+        collection.insert_one(account)

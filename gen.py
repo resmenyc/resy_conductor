@@ -157,8 +157,6 @@ def write_account_to_db(email, password, first_name, last_name, phone_num, acc_t
         "active": True,
         "created_at": time.time(),
     }
-    
-    print(account)
 
     database.upload_account(account)
 
