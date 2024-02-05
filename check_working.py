@@ -6,11 +6,13 @@ from tqdm import tqdm
 from proxies import Proxies
 import threading
 from network import Network
+from random import shuffle
 
 database = Database()
 utils = Utils()
 proxies = Proxies()
 accounts = database.get_accounts()
+shuffle(accounts)
 
 def init(accs):
     try:
