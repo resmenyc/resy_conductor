@@ -14,7 +14,7 @@ proxies = Proxies()
 accounts = database.get_accounts()
 shuffle(accounts)
 
-def init(accs):
+def check_working(accs):
     try:
         num = 0
         delete_accs = 0
@@ -106,7 +106,7 @@ def split_list(a_list):
 if __name__ == '__main__':
     utils.thread_log("Script to iterate over the DB and check all the accounts")
     input("\nPress enter to start, this will take a while\n")
-    
+
     accs1234, accs5678 = split_list(accounts)
     accs12, accs34 = split_list(accs1234)
     accs56, accs78 = split_list(accs5678)
@@ -114,16 +114,16 @@ if __name__ == '__main__':
     accs3, accs4 = split_list(accs34)
     accs5, accs6 = split_list(accs56)
     accs7, accs8 = split_list(accs78)
-    
-    t1 = threading.Thread(target=init, args=(accs1,), name="Thread1")
-    t2 = threading.Thread(target=init, args=(accs2,), name="Thread2")
-    t3 = threading.Thread(target=init, args=(accs3,), name="Thread3")
-    t4 = threading.Thread(target=init, args=(accs4,), name="Thread4")
-    t5 = threading.Thread(target=init, args=(accs5,), name="Thread5")
-    t6 = threading.Thread(target=init, args=(accs6,), name="Thread6")
-    t7 = threading.Thread(target=init, args=(accs7,), name="Thread7")
-    t8 = threading.Thread(target=init, args=(accs8,), name="Thread8")
-    
+
+    t1 = threading.Thread(target=check_working, args=(accs1,), name="Thread1")
+    t2 = threading.Thread(target=check_working, args=(accs2,), name="Thread2")
+    t3 = threading.Thread(target=check_working, args=(accs3,), name="Thread3")
+    t4 = threading.Thread(target=check_working, args=(accs4,), name="Thread4")
+    t5 = threading.Thread(target=check_working, args=(accs5,), name="Thread5")
+    t6 = threading.Thread(target=check_working, args=(accs6,), name="Thread6")
+    t7 = threading.Thread(target=check_working, args=(accs7,), name="Thread7")
+    t8 = threading.Thread(target=check_working, args=(accs8,), name="Thread8")
+
     t1.start()
     t2.start()
     t3.start()
