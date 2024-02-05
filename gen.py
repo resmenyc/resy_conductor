@@ -2,8 +2,7 @@ import requests
 import os
 from faker import Faker
 from datetime import datetime
-from random import randint
-from random import choice
+from random import randint, choice
 import secrets
 import uuid
 import string
@@ -30,6 +29,31 @@ RESY_UA = "Resy/2.76.1 (com.resy.ResyApp; build:4977; iOS 17.3.0) Alamofire/5.8.
 STRIPE_UA = "Resy/4977 CFNetwork/1492.0.1 Darwin/23.3.0"
 STRIPE_P_UA = "stripe-ios/23.18.0; variant.legacy; PaymentSheet"
 
+
+def gen_email(first_name, last_name, fake_domain):
+    fake = Faker()
+    faker_email = fake.email()
+
+    base_email_prefix = faker_email.split("@")[0]
+    email = f"{first_name}{base_email_prefix}@{fake_domain}"
+
+    return email
+
+
+def gen_email_2(first_name, last_name, fake_domain):
+    return f"{first_name}.{last_name}{randint(100, 999)}@{fake_domain}"
+
+
+def gen_email_3(first_name, last_name, fake_domain):
+    fake = Faker()
+    faker_email = fake.email()
+
+    base_email_prefix = faker_email.split("@")[0]
+    email = f"{last_name}{base_email_prefix}@{fake_domain}"
+
+    return email
+
+gen_email_methods = [gen_email, gen_email_2, gen_email_3]
 
 def thread_log(message):
     msg = f"[{threading.current_thread().name}] <{datetime.utcnow()}> {message}"
@@ -82,7 +106,8 @@ def gen(num_accs, fake_domain, acc_type):
         last_name = name.split(" ")[1]
 
         # TODO: add more ways to do this so they arent all templated the same
-        email = gen_email(first_name, last_name, fake_domain)
+        email_method = choice(gen_email_methods)
+        email = email_method(first_name, last_name, fake_domain)
         password = gen_password()
 
         phone_num = gen_phone_num()
@@ -101,17 +126,6 @@ def gen(num_accs, fake_domain, acc_type):
             except Exception as e:
                 print(e)
                 thread_error("Error adding payment info")
-
-
-def gen_email(first_name, last_name, fake_domain):
-    fake = Faker()
-    faker_email = fake.email()
-
-    base_email_prefix = faker_email.split("@")[0]
-    email = f"{first_name}{base_email_prefix}@{fake_domain}"
-
-    return email
-
 
 def gen_phone_num():
     fake = Faker()
