@@ -32,9 +32,9 @@ def unsuspend_all():
 
 if __name__ == '__main__':
     utils.thread_log(f"Script to randomly suspend accounts | Factor {SUSPEND_FACTOR}")
-    utils.thread_log("Running every sunday at 2am")
+    utils.thread_log("Running every day at 2am")
 
-    schedule.every().sunday.at("02:00", "America/New_York").do(init)
+    schedule.every().day.at("02:00", "America/New_York").do(init)
     
     if os.getenv("DEBUG"):
         init()
