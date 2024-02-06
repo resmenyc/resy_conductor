@@ -2,7 +2,6 @@ from database import Database
 import sys
 import time
 from utils import Utils
-from tqdm import tqdm
 from proxies import Proxies
 import threading
 from network import Network

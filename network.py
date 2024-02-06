@@ -1,8 +1,6 @@
 import requests
 import urllib3
 from utils import Utils
-import os
-import time
 from proxies import Proxies
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
