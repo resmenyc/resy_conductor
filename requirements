@@ -148,7 +148,6 @@ tensorboard==2.10.1
 tensorboard-data-server==0.6.1
 tensorboard-plugin-wit==1.8.1
 tensorflow-estimator==2.10.0
-tensorflow-macos==2.10.0
 termcolor==2.0.1
 terminado==0.15.0
 thop==0.1.1.post2209072238
