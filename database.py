@@ -50,3 +50,9 @@ class Database:
     def upload_account(self, account):
         collection = self.get_db().resy_accounts
         collection.insert_one(account)
+    
+    def get_reservations_safe(self, query={}):
+        ress = self.get_db().resy_reservations.find(query)
+        ress = loads(dumps(ress))
+        
+        return ress
