@@ -56,7 +56,7 @@ def gen_email_3(first_name, last_name, fake_domain):
     return email
 
 def gen_email_4(first_name, last_name, fake_domain):
-    return f"{first_name}{RandomWord().word()}@{fake_domain}"
+    return f"{first_name}{RandomWord().word()}{randint(10, 99)}@{fake_domain}"
 
 def gen_email_5(first_name, last_name, fake_domain):
     first_initial = first_name[:1]
@@ -67,7 +67,7 @@ def gen_email_6(first_name, last_name, fake_domain):
     return f"{first_name}{last_initial}{randint(100, 999)}@{fake_domain}"
 
 def gen_email_7(first_name, last_name, fake_domain):
-    return f"{RandomWord().word()}{last_name}@{fake_domain}"
+    return gen_email_8(first_name, last_name, fake_domain)
 
 
 def gen_email_8(first_name, last_name, fake_domain):
