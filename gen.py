@@ -15,6 +15,7 @@ from database import Database
 from aesCipher import AESCipher
 from proxies import Proxies
 import time
+from wonderwords import RandomWord
 
 colorama.init()
 
@@ -54,7 +55,26 @@ def gen_email_3(first_name, last_name, fake_domain):
 
     return email
 
-gen_email_methods = [gen_email, gen_email_2, gen_email_3]
+def gen_email_4(first_name, last_name, fake_domain):
+    return f"{first_name}{RandomWord().word()}@{fake_domain}"
+
+def gen_email_5(first_name, last_name, fake_domain):
+    first_initial = first_name[:1]
+    return f"{first_initial}{last_name}{randint(100, 999)}@{fake_domain}"
+
+def gen_email_6(first_name, last_name, fake_domain):
+    last_initial = last_name[:1]
+    return f"{first_name}{last_initial}{randint(100, 999)}@{fake_domain}"
+
+def gen_email_7(first_name, last_name, fake_domain):
+    return f"{RandomWord().word()}{last_name}@{fake_domain}"
+
+
+def gen_email_8(first_name, last_name, fake_domain):
+    return f"{RandomWord().word()}{last_name}{randint(10, 99)}@{fake_domain}"
+
+# TODO:add weights to each one
+gen_email_methods = [gen_email, gen_email_2, gen_email_3, gen_email_4, gen_email_5, gen_email_6, gen_email_7, gen_email_8]
 
 def thread_log(message):
     msg = f"[{threading.current_thread().name}] <{datetime.utcnow()}> {message}"
