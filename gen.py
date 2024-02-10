@@ -56,7 +56,7 @@ def gen_email_3(first_name, last_name, fake_domain):
     return email
 
 def gen_email_4(first_name, last_name, fake_domain):
-    return f"{first_name}{RandomWord().word()}{randint(10, 999)}@{fake_domain}".lower()
+    return f"{first_name}{RandomWord().word()}{randint(1, 999)}@{fake_domain}".lower()
 
 def gen_email_5(first_name, last_name, fake_domain):
     first_initial = first_name[:1]
@@ -71,7 +71,7 @@ def gen_email_7(first_name, last_name, fake_domain):
 
 
 def gen_email_8(first_name, last_name, fake_domain):
-    return f"{RandomWord().word()}{last_name}{randint(10, 999)}@{fake_domain}".lower()
+    return f"{RandomWord().word()}{last_name}{randint(1, 999)}@{fake_domain}".lower()
 
 # TODO:add weights to each one
 gen_email_methods = [gen_email, gen_email_2, gen_email_3, gen_email_4, gen_email_5, gen_email_6, gen_email_7, gen_email_8]
