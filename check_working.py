@@ -26,6 +26,11 @@ def check_working(accs):
                 num += 1
                 continue
             
+            if "-" in account["email"]:
+                database.delete_account({"email": account["email"]})
+                num += 1
+                continue                
+            
             network = Network(proxies.get_proxy())
             auth_token, payment_method_id, is_acc_usable = login(network, account)
 
