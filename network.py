@@ -13,7 +13,7 @@ class Network:
     def __init__(self, proxy):
         # Config keys
         self.USER_AGENT = (
-            "Resy/2.76.1 (com.resy.ResyApp; build:4977; iOS 17.3.0) Alamofire/5.8.0"
+            "Resy/2.77 (com.resy.ResyApp; build:5035; iOS 17.3.0) Alamofire/5.8.0"
         )
         self.RESY_KEY = 'ResyAPI api_key="AIcdK2rLXG6TYwJseSbmrBAy3RP81ocd"'
 
@@ -43,21 +43,15 @@ class Network:
         payload = {"email": email, "password": password}
 
         headers = {
-            "host": "api.resy.com",
-            "connection": "keep-alive",
-            "x-origin": "https://resy.com",
-            "authorization": self.RESY_KEY,
-            "user-agent": self.USER_AGENT,
-            "content-type": "application/x-www-form-urlencoded",
-            "accept": "application/json, text/plain, */*",
-            "cache-control": "no-cache",
-            "origin": "https://resy.com",
-            "sec-fetch-site": "same-site",
-            "sec-fetch-mode": "cors",
-            "sec-fetch-dest": "empty",
-            "referer": "https://resy.com/",
-            "accept-encoding": "gzip, deflate, br",
-            "accept-language": "en-US,en;q=0.9",
+            "Accept": "application/json, text/plain, */*",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Authorization": self.RESY_KEY,
+            "Cache-Control": "no-cache",
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Connection": "keep-alive",
+            "Host": "api.resy.com",
+            "User-Agent": self.USER_AGENT,
         }
 
         response = self.session.post(
@@ -75,23 +69,16 @@ class Network:
         url = f"https://api.resy.com/3/user/reservations?limit=1&offset=1&type=upcoming&book_on_behalf_of=false"
 
         headers = {
-            "host": "api.resy.com",
-            "connection": "keep-alive",
-            "x-origin": "https://widgets.resy.com",
-            "x-resy-auth-token": self.auth_token,
-            "authorization": self.RESY_KEY,
-            "user-agent": self.USER_AGENT,
-            "x-resy-universal-auth": self.auth_token,
-            "content-type": "application/json",
-            "accept": "application/json, text/plain, */*",
+            "Accept": "*/*",
+            "Accept-Encoding": "br;q=1.0, gzip;q=0.9, deflate;q=0.8",
+            "Accept-Language": "en-US;q=1.0, fr-US;q=0.9",
+            "Authorization": self.RESY_KEY,
+            "Connection": "keep-alive",
+            "Host": "api.resy.com",
+            "User-Agent": self.USER_AGENT,
+            "X-Resy-Auth-Token": self.auth_token,
+            "X-Resy-Universal-Auth": self.auth_token,
             "cache-control": "no-cache",
-            "origin": "https://widgets.resy.com",
-            "sec-fetch-site": "same-site",
-            "sec-fetch-mode": "cors",
-            "sec-fetch-dest": "empty",
-            "referer": "https://widgets.resy.com/",
-            "accept-encoding": "gzip, deflate, br",
-            "accept-language": "en-US,en;q=0.9",
         }
 
         response = self.session.get(

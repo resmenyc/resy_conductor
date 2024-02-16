@@ -25,18 +25,21 @@ def check_working(accs):
                 database.delete_account({"email": account["email"]})
                 num += 1
                 continue
-            
+
             if "-" in account["email"]:
                 database.delete_account({"email": account["email"]})
                 num += 1
                 continue                
-            
+
             network = Network(proxies.get_proxy())
             auth_token, payment_method_id, is_acc_usable = login(network, account)
 
             if (auth_token is None) or (payment_method_id is None):
                 # account is clipped, delete
                 database.delete_account({"email": account["email"]})
+                database.update_reservations(
+                    {"email": account["email"]}, {"$set": {"reviewed": True, "cancelled": True}}
+                )
                 utils.thread_error("Deleting account...")
                 delete_accs += 1
             elif not is_acc_usable:
@@ -50,7 +53,7 @@ def check_working(accs):
                 )
 
             num += 1
-            utils.thread_log(f"Checked account {num}/{len(accs)}")
+            utils.thread_success(f"Checked account {num}/{len(accs)}")
             # time.sleep(1)
 
         print()
@@ -138,9 +141,9 @@ def init():
 
 if __name__ == "__main__":
     utils.thread_log("Script to iterate over the DB and check all the accounts\n")
-    utils.thread_log("Running every sunday at 2:00am")
+    utils.thread_log("Running every wednesday at 2:00am")
 
-    schedule.every().sunday.at("02:00", "America/New_York").do(init)
+    schedule.every().wednesday.at("02:00", "America/New_York").do(init)
     
     if os.getenv("DEBUG"):
         init()
