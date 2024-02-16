@@ -82,7 +82,7 @@ def login(network, account, retrys=0):
         return login(network, account, retrys=retrys + 1)
 
     if not login_res.ok:
-        utils.thread_warn("Login failed")
+        utils.thread_warn(f"Login failed [{login_res.status_code}]")
 
         return login(network, account, retrys=retrys + 1)
     else:
