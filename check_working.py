@@ -53,7 +53,7 @@ def check_working(accs):
                 )
 
             num += 1
-            utils.thread_log(f"Checked account {num}/{len(accs)}")
+            utils.thread_success(f"Checked account {num}/{len(accs)}")
             # time.sleep(1)
 
         print()

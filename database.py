@@ -50,18 +50,26 @@ class Database:
     def upload_account(self, account):
         collection = self.get_db().resy_accounts
         collection.insert_one(account)
-    
+
     def get_reservations_safe(self, query={}):
         ress = self.get_db().resy_reservations.find(query)
         ress = loads(dumps(ress))
-        
+
         return ress
-    
+
+    def get_reservations(self, query={}):
+        ress = self.get_db().resy_reservations.find(query)
+        ress = loads(dumps(ress))
+
+        for res in ress:
+            res["password"] = aesCiper.decrypt(res["password"])
+
+        return ress
+
     def update_reservation(self, query, exec):
         collection = self.get_db().resy_reservations
         collection.update_one(query, exec)
-    
+
     def update_reservations(self, query, exec):
         collection = self.get_db().resy_reservations
         collection.update_many(query, exec)
-        
