@@ -141,8 +141,9 @@ def init():
 
 if __name__ == "__main__":
     utils.thread_log("Script to iterate over the DB and check all the accounts\n")
-    utils.thread_log("Running every sunday at 2:00am")
+    utils.thread_log("Running every sunday and wed at 2:00am")
 
+    schedule.every().wednesday.at("02:00", "America/New_York").do(init)
     schedule.every().sunday.at("02:00", "America/New_York").do(init)
     
     if os.getenv("DEBUG"):

@@ -47,3 +47,21 @@ class Discord:
             webhook.add_embed(embed)
 
             webhook.execute()
+
+    def logs_wh(self, message):
+        if self.logs_webhook_url is not None:
+            webhook = DiscordWebhook(url=self.logs_webhook_url)
+
+            embed = DiscordEmbed(
+                title="ResMe System Robot",
+                description="New ResMe System Notification",
+                color="00f2ff",
+            )
+
+            embed.set_footer(text=f"Sent @ {datetime.now()}")
+
+            embed.add_embed_field(name="Message", value=message)
+
+            webhook.add_embed(embed)
+
+            webhook.execute()
