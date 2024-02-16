@@ -4,11 +4,13 @@ from utils import Utils
 from random import shuffle
 import schedule
 import os
+from discord import Discord
 
 SUSPEND_FACTOR = 4
 
 database = Database()
 utils = Utils()
+discord = Discord()
 
 def init():
     utils.thread_log("Running recycle script")
@@ -16,7 +18,7 @@ def init():
     accounts = database.get_accounts({"suspended": False, "active": True})
 
     database.update_accounts({"suspended": True}, {"$set": {"suspended": False}})
-    
+
     shuffle(accounts)
 
     x = 0
@@ -25,7 +27,9 @@ def init():
         x += 1
         utils.thread_log(f"Suspended account {x}/{len(accounts)//SUSPEND_FACTOR}")
 
-    utils.thread_success(f"Successfully marked {len(accounts)//SUSPEND_FACTOR} accounts as suspended and unsuspended old accounts")
+    end_msg = f"Successfully marked {len(accounts)//SUSPEND_FACTOR} accounts as suspended and unsuspended old accounts"
+    utils.thread_success(f"\n{end_msg}")
+    discord.logs_wh(end_msg)
 
 def unsuspend_all():
     database.update_accounts({}, {"$set": {"suspended": False}})
