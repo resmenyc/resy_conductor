@@ -1,0 +1,27 @@
+name: Deploy Conductor To Gengar Server
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy-prod:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Deploy On Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          sync: true
+          host: ${{ secrets.GENGAR_HOST }}
+          username: ${{ secrets.GENGAR_USER }}
+          password: ${{ secrets.GENGAR_PASS }}
+          script: |
+            cd ./resy_conductor
+            source .venv/bin/activate
+            git fetch
+            git checkout main
+            git pull origin main
+            sh ./pip_install.sh
+            sh pm2_update.sh
+      - run: echo "🍏 This job's status is ${{ job.status }}."
