@@ -25,18 +25,21 @@ def check_working(accs):
                 database.delete_account({"email": account["email"]})
                 num += 1
                 continue
-            
+
             if "-" in account["email"]:
                 database.delete_account({"email": account["email"]})
                 num += 1
                 continue                
-            
+
             network = Network(proxies.get_proxy())
             auth_token, payment_method_id, is_acc_usable = login(network, account)
 
             if (auth_token is None) or (payment_method_id is None):
                 # account is clipped, delete
                 database.delete_account({"email": account["email"]})
+                database.update_reservations(
+                    {"email": account["email"]}, {"$set": {"reviewed": True, "cancelled": True}}
+                )
                 utils.thread_error("Deleting account...")
                 delete_accs += 1
             elif not is_acc_usable:

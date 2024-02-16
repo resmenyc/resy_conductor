@@ -56,3 +56,12 @@ class Database:
         ress = loads(dumps(ress))
         
         return ress
+    
+    def update_reservation(self, query, exec):
+        collection = self.get_db().resy_reservations
+        collection.update_one(query, exec)
+    
+    def update_reservations(self, query, exec):
+        collection = self.get_db().resy_reservations
+        collection.update_many(query, exec)
+        
