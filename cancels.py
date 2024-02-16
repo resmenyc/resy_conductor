@@ -64,10 +64,11 @@ def init():
 
         x += 1
         utils.thread_success(f"Checked reservation {x}/{len(reservations)}")
-    
+    end_msg = f"Finished checking {len(reservations)} accounts, deleted {delete_accs} (accounts), cancelled {cancelled_res}"
     utils.thread_success(
-        f"Finished checking {len(reservations)} accounts, deleted {delete_accs} (accounts), cancelled {cancelled_res}"
+        f"\n{end_msg}"
     )
+    discord.logs_wh(end_msg)
 
 def login(network, account, retrys=0):
     if retrys > 5:

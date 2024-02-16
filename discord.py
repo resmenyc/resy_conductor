@@ -53,8 +53,8 @@ class Discord:
             webhook = DiscordWebhook(url=self.logs_webhook_url)
 
             embed = DiscordEmbed(
-                title="ResMe System Robot",
-                description="New ResMe System Notification",
+                title="ResMe Conductor Robot",
+                description="New ResMe Conductor Notification",
                 color="00f2ff",
             )
 
