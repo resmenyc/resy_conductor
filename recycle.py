@@ -4,7 +4,7 @@ from utils import Utils
 from random import shuffle
 import schedule
 import os
-from discord import Discord
+from discord_helper import Discord
 
 SUSPEND_FACTOR = 4
 
