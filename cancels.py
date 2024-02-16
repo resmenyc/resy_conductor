@@ -114,7 +114,7 @@ def check_acc_has_res(network, retrys=0):
         utils.thread_error(f"Failed to check account reservations with exception: <{account_check_res.status_code}>")
         return check_acc_has_res(network, retrys=retrys + 1)
 
-    if account_check_res.status_code == 200:
+    if (account_check_res.status_code == 200) or (account_check_res.status_code == 201):
         if "reservations" in account_check_res.json():
             if len(account_check_res.json()["reservations"]) > 0:
                 return True
