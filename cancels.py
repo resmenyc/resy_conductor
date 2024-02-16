@@ -4,7 +4,7 @@ from database import Database
 from utils import Utils
 from network import Network
 from proxies import Proxies
-from discord import Discord
+from discord_helper import Discord
 import schedule
 import os
 import time
