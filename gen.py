@@ -304,7 +304,15 @@ def add_payment_info(s, token):
         ),
     }
 
-    res2 = s.post(url2, data=payload2, headers=headers2)
+    try: 
+        res2 = s.post(url2, data=payload2, headers=headers2, proxies=proxies.get_proxy(), verify=False, timeout=10)
+    except Exception as e:
+        thread_error(e)
+        return(s, token)
+    
+    if not res2.ok:
+        thread_error(res2.status_code)
+        return(s, token)
 
     payment_method_id = res2.json()["payment_method"]
 
