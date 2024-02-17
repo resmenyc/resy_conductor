@@ -186,6 +186,10 @@ def gen(num_accs, acc_type):
                     continue
     except (KeyboardInterrupt, SystemExit):
         sys.exit(0)
+    
+    print()
+    thread_success("THREAD COMPLETE, QUITTING THREAD")
+    sys.exit()
 
 def gen_phone_num():
     fake = Faker()
