@@ -221,6 +221,7 @@ def create(s, first_name, last_name, email, password, phone_num, retry=False):
 
     res = s.post(url, headers=headers, data=payload, proxies=proxies.get_proxy(), verify=False)
     if res.status_code != 201:
+        print(res.text)
         return None
 
     auth_token = res.json()["user"]["token"]

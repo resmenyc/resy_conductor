@@ -43,6 +43,10 @@ def get_today_ress():
     start_of_day_epoch = int(start_of_day_ts.timestamp())
     
     reservations = database.get_reservations_safe(query={"createdAt": {"$gt": start_of_day_epoch}})
+    reservations_new = database.get_reservations_safe(query={"createdAt": {"$gt": str(start_of_day_ts)}})
+    
+    for rn in reservations_new:
+        reservations.append(rn)
     
     return reservations
 
