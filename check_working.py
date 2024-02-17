@@ -7,11 +7,13 @@ import threading
 from network import Network
 from random import shuffle
 import schedule
+from discord_helper import Discord
 import os
 
 database = Database()
 utils = Utils()
 proxies = Proxies()
+discord = Discord()
 accounts = database.get_accounts()
 shuffle(accounts)
 
@@ -57,7 +59,9 @@ def check_working(accs):
             # time.sleep(1)
 
         print()
-        utils.thread_success(f"Finished checking {len(accounts)} accounts, deleted {delete_accs}")
+        end_msg = f"Finished checking {len(accounts)} accounts, deleted {delete_accs}"
+        utils.thread_success(end_msg)
+        discord.logs_wh(end_msg)
     except (KeyboardInterrupt, SystemExit):
         sys.exit()
 
