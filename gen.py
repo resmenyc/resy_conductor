@@ -189,7 +189,7 @@ def gen(num_accs, acc_type):
                     print(e)
                     thread_error("Error adding payment info")
                     x += 1
-                    threading.Thread(
+                    t = threading.Thread(
                         target=gen,
                         name=f"SomeTryAgainThread",
                         args=(
@@ -202,7 +202,7 @@ def gen(num_accs, acc_type):
         sys.exit(0)
 
     print()
-    thread_success("THREAD COMPLETE, QUITTING THREAD")
+    thread_success(f"THREAD COMPLETE, QUITTING THREAD [{threading.active_count()}]")
 
 def gen_phone_num():
     fake = Faker()
