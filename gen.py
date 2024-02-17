@@ -16,6 +16,10 @@ from aesCipher import AESCipher
 from proxies import Proxies
 import time
 from wonderwords import RandomWord
+import json
+import urllib3
+
+requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = "ALL:@SECLEVEL=1"
 
 colorama.init()
 
@@ -27,9 +31,9 @@ proxies = Proxies()
 aesCipher = AESCipher(os.getenv("ENCRYPTION_KEY"))
 domains = []
 
-RESY_UA = "Resy/2.76.1 (com.resy.ResyApp; build:4977; iOS 17.3.0) Alamofire/5.8.0"
+RESY_UA = "Resy/2.77 (com.resy.ResyApp; build:5035; iOS 17.3.0) Alamofire/5.8.0"
 STRIPE_UA = "Resy/4977 CFNetwork/1492.0.1 Darwin/23.3.0"
-STRIPE_P_UA = "stripe-ios/23.18.0; variant.legacy; PaymentSheet"
+STRIPE_P_UA = "stripe-ios/23.18.2; variant.legacy; PaymentSheet"
 
 
 def gen_email(first_name, last_name, fake_domain):
@@ -108,7 +112,7 @@ def gen_password():
     alphabet = string.ascii_letters + string.digits
     password = "".join(secrets.choice(alphabet) for i in range(randint(16, 20)))
 
-    return f"${password}"
+    return f"${password}111"
 
 
 def gen(num_accs, acc_type):
@@ -186,7 +190,8 @@ def write_account_to_file(email, password, first_name, last_name, phone_num):
         f.write(f"{email}|{password}|{first_name}|{last_name}|{phone_num}\n")
 
 
-def create(s, first_name, last_name, email, password, phone_num, retry=False):
+def create(s, first_name, last_name, email, password, phone_num):
+    retry_cnt = 0
     url = "https://api.resy.com/2/user/registration"
 
     headers = {
@@ -196,14 +201,12 @@ def create(s, first_name, last_name, email, password, phone_num, retry=False):
         "Authorization": 'ResyAPI api_key="AIcdK2rLXG6TYwJseSbmrBAy3RP81ocd"',
         "Cache-Control": "no-cache",
         "Content-Type": "application/x-www-form-urlencoded",
-        "Dnt": "1",
-        "Origin": "https://resy.com",
-        "Referer": "https://resy.com/",
+        "Connection": "keep-alive",
+        "Host": "api.resy.com",
         "User-Agent": RESY_UA,
-        "X-Origin": "https://resy.com",
     }
 
-    phone_num_prefix = ["347", "212", "917", "646", "718", "315", "929"]
+    phone_num_prefix = ["347", "212", "917", "646", "718"]
 
     payload = {
         "first_name": first_name,
@@ -221,8 +224,16 @@ def create(s, first_name, last_name, email, password, phone_num, retry=False):
 
     res = s.post(url, headers=headers, data=payload, proxies=proxies.get_proxy(), verify=False)
     if res.status_code != 201:
-        print(res.text)
-        return None
+        print("Retrying...")
+
+        return create(
+            s,
+            first_name,
+            last_name,
+            email,
+            password,
+            f"{phone_num.replace(phone_num[0:3], choice(phone_num_prefix), 1)}",
+        )
 
     auth_token = res.json()["user"]["token"]
 
@@ -265,17 +276,25 @@ def add_payment_info(s, token):
         "payment_method_data[type]": "card",
         "use_stripe_sdk": "true",
     }
+
     headers2 = {
-        "host": "api.stripe.com",
-        "content-type": "application/x-www-form-urlencoded",
-        "accept-encoding": "gzip, deflate, br",
-        "stripe-version": "2020-08-27",
-        "user-agent": STRIPE_UA,
-        "connection": "keep-alive",
-        "accept": "*/*",
-        "accept-language": "en-US,en;q=0.9",
-        "x-stripe-user-agent": '{"bindings_version":"23.18.0","model":"iPhone16,2","os_version":"17.3","vendor_identifier":"521D44E8-0B56-460D-95A4-D74D91611B1F","type":"iPhone16,2","lang":"objective-c"}',
-        "authorization": "Bearer pk_live_51JdK5FIqT2RuI7QtpZsqeG1GTMZHBTBCTr4r1MZkJJt60ybz3REl92I0uKIynSMIUMXkUlMGAU8B5pRJ0533KImO0006EPpHUI",
+        "Accept": "*/*",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Authorization": "Bearer pk_live_51JdK5FIqT2RuI7QtpZsqeG1GTMZHBTBCTr4r1MZkJJt60ybz3REl92I0uKIynSMIUMXkUlMGAU8B5pRJ0533KImO0006EPpHUI",
+        "Connection": "Keep-Alive",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Host": "api.stripe.com",
+        "Stripe-Version": "2020-08-27",
+        "X-Stripe-User-Agent": json.dumps(
+            {
+                "os_version": "17.3.1",
+                "model": "iPhone",
+                "vendor_identifier": "521D44E8-0B56-460D-95A4-D74D91611B1F",
+                "bindings_version": "23.18.2",
+                "lang": "objective-c",
+                "type": "iPhone16,2",
+            }
+        ),
     }
 
     res2 = s.post(url2, data=payload2, headers=headers2)
@@ -301,6 +320,7 @@ def add_payment_info(s, token):
     res3 = requests.post(
         url3, data=payload3, headers=headers3, proxies=proxies.get_proxy(), verify=False
     )
+    print(res3.status_code)
 
 
 if __name__ == "__main__":
