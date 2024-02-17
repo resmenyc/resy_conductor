@@ -165,6 +165,7 @@ def gen(num_accs, acc_type):
                 token = create(s, first_name, last_name, email, password, phone_num)
             except Exception as e:
                 thread_error(e)
+                x+= 1
                 gen(1, acc_type)
                 continue
 
@@ -180,6 +181,7 @@ def gen(num_accs, acc_type):
                 except Exception as e:
                     print(e)
                     thread_error("Error adding payment info")
+                    x += 1
                     gen(1, acc_type)
                     continue
     except (KeyboardInterrupt, SystemExit):
