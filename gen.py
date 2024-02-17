@@ -202,7 +202,9 @@ def gen(num_accs, acc_type):
         sys.exit(0)
 
     print()
-    thread_success(f"THREAD COMPLETE, QUITTING THREAD [{threading.active_count()}]")
+    
+    if num_accs != 1:
+        thread_success(f"THREAD COMPLETE, QUITTING THREAD [{threading.active_count()}]")
 
 def gen_phone_num():
     fake = Faker()
