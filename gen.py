@@ -211,7 +211,6 @@ def create(s, first_name, last_name, email, password, phone_num):
         "Authorization": 'ResyAPI api_key="AIcdK2rLXG6TYwJseSbmrBAy3RP81ocd"',
         "Cache-Control": "no-cache",
         "Content-Type": "application/x-www-form-urlencoded",
-        "Connection": "keep-alive",
         "Host": "api.resy.com",
         "User-Agent": RESY_UA,
     }
@@ -256,7 +255,6 @@ def add_payment_info(s, token):
     headers = {
         "host": "api.resy.com",
         "accept": "*/*",
-        "connection": "keep-alive",
         "x-resy-auth-token": token,
         "accept-encoding": "br;q=1.0, gzip;q=0.9, deflate;q=0.8",
         "x-resy-universal-auth": token,
@@ -291,7 +289,6 @@ def add_payment_info(s, token):
         "Accept": "*/*",
         "Accept-Language": "en-US,en;q=0.9",
         "Authorization": "Bearer pk_live_51JdK5FIqT2RuI7QtpZsqeG1GTMZHBTBCTr4r1MZkJJt60ybz3REl92I0uKIynSMIUMXkUlMGAU8B5pRJ0533KImO0006EPpHUI",
-        "Connection": "Keep-Alive",
         "Content-Type": "application/x-www-form-urlencoded",
         "Host": "api.stripe.com",
         "Stripe-Version": "2020-08-27",
@@ -318,7 +315,6 @@ def add_payment_info(s, token):
         "host": "api.resy.com",
         "content-type": "application/x-www-form-urlencoded; charset=utf-8",
         "accept": "*/*",
-        "connection": "keep-alive",
         "x-resy-auth-token": token,
         "accept-language": "en-US;q=1.0",
         "x-resy-universal-auth": token,
