@@ -203,7 +203,7 @@ def create(s, first_name, last_name, email, password, phone_num, retry=False):
         "X-Origin": "https://resy.com",
     }
 
-    phone_num_prefix = ["347", "212", "917"]
+    phone_num_prefix = ["347", "212", "917", "646", "718", "315", "929"]
 
     payload = {
         "first_name": first_name,
