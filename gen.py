@@ -77,8 +77,11 @@ def gen_email_7(first_name, last_name, fake_domain):
 def gen_email_8(first_name, last_name, fake_domain):
     return f"{RandomWord().word()}{last_name}{randint(1, 999)}@{fake_domain}".lower()
 
+def gen_email_9(first_name, last_name, fake_domain):
+    return f"{RandomWord().word()}{RandomWord().word()}{first_name[:1].upper()}{last_name[:1].upper()}{randint(1, 99)}@{fake_domain}"
+
 # TODO:add weights to each one
-gen_email_methods = [gen_email, gen_email_2, gen_email_3, gen_email_4, gen_email_5, gen_email_6, gen_email_7, gen_email_8]
+gen_email_methods = [gen_email, gen_email_2, gen_email_3, gen_email_4, gen_email_5, gen_email_6, gen_email_7, gen_email_8, gen_email_9]
 
 def thread_log(message):
     msg = f"[{threading.current_thread().name}] <{datetime.utcnow()}> {message}"
