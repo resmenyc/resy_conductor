@@ -166,7 +166,14 @@ def gen(num_accs, acc_type):
             except Exception as e:
                 thread_error(e)
                 x+= 1
-                gen(1, acc_type)
+                threading.Thread(
+                    target=gen,
+                    name=f"SomeTryAgainThread",
+                    args=(
+                        1,
+                        acc_type,
+                    ),
+                ).start()
                 continue
 
             if token != None:
@@ -182,14 +189,20 @@ def gen(num_accs, acc_type):
                     print(e)
                     thread_error("Error adding payment info")
                     x += 1
-                    gen(1, acc_type)
+                    threading.Thread(
+                        target=gen,
+                        name=f"SomeTryAgainThread",
+                        args=(
+                            1,
+                            acc_type,
+                        ),
+                    ).start()
                     continue
     except (KeyboardInterrupt, SystemExit):
         sys.exit(0)
-    
+
     print()
     thread_success("THREAD COMPLETE, QUITTING THREAD")
-    sys.exit()
 
 def gen_phone_num():
     fake = Faker()
