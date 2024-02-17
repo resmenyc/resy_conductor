@@ -138,7 +138,12 @@ def gen(num_accs, acc_type):
 
         phone_num = gen_phone_num()
 
-        token = create(s, first_name, last_name, email, password, phone_num)
+        try:
+            token = create(s, first_name, last_name, email, password, phone_num)
+        except Exception as e:
+            thread_error(e)
+            return gen(1, acc_type)    
+        
 
         if token != None:
             try:
@@ -206,7 +211,7 @@ def create(s, first_name, last_name, email, password, phone_num):
         "User-Agent": RESY_UA,
     }
 
-    phone_num_prefix = ["347", "212", "917", "646", "718"]
+    phone_num_prefix = ["347", "212", "917", "646"]
 
     payload = {
         "first_name": first_name,
@@ -224,7 +229,7 @@ def create(s, first_name, last_name, email, password, phone_num):
 
     res = s.post(url, headers=headers, data=payload, proxies=proxies.get_proxy(), verify=False)
     if res.status_code != 201:
-        print("Retrying...")
+        # print("Retrying...", res.text)
 
         return create(
             s,
@@ -320,7 +325,6 @@ def add_payment_info(s, token):
     res3 = requests.post(
         url3, data=payload3, headers=headers3, proxies=proxies.get_proxy(), verify=False
     )
-    print(res3.status_code)
 
 
 if __name__ == "__main__":
