@@ -124,9 +124,9 @@ def check_acc_has_res(network, retrys=0):
 
 if __name__ == '__main__':
     utils.thread_log("Script to check future reservations for cancels and to notify if they are cancelled")
-    utils.thread_log("Running every day at 1am")
+    utils.thread_log("Running every day at 2pm")
         
-    schedule.every().day.at("01:00", "America/New_York").do(init)
+    schedule.every().day.at("14:00", "America/New_York").do(init)
     
     if os.getenv("DEBUG"):
         init()
