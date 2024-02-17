@@ -18,6 +18,9 @@ import time
 from wonderwords import RandomWord
 import json
 import urllib3
+import sys
+
+sys.setrecursionlimit(9999)
 
 requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = "ALL:@SECLEVEL=1"
 
@@ -135,49 +138,52 @@ def gen_password():
 
 
 def gen(num_accs, acc_type):
-    x = 0
-    for i in range(num_accs):
-        s = requests.Session()
+    try:
+        x = 0
+        for i in range(num_accs):
+            s = requests.Session()
 
-        fake_domain = choice(domains)
-        fake = Faker()
-        name = fake.name()
-        first_name = name.split(" ")[0]
-
-        while len(first_name) <= 4:
+            fake_domain = choice(domains)
+            fake = Faker()
             name = fake.name()
             first_name = name.split(" ")[0]
 
-        last_name = name.split(" ")[1]
+            while len(first_name) <= 4:
+                name = fake.name()
+                first_name = name.split(" ")[0]
 
-        # TODO: add more ways to do this so they arent all templated the same
-        email_method = choice(gen_email_methods)
-        email = email_method(first_name, last_name, fake_domain)
-        password = gen_password()
+            last_name = name.split(" ")[1]
 
-        phone_num = gen_phone_num()
+            # TODO: add more ways to do this so they arent all templated the same
+            email_method = choice(gen_email_methods)
+            email = email_method(first_name, last_name, fake_domain)
+            password = gen_password()
 
-        try:
-            token = create(s, first_name, last_name, email, password, phone_num)
-        except Exception as e:
-            thread_error(e)
-            gen(1, acc_type)
-            continue
+            phone_num = gen_phone_num()
 
-        if token != None:
             try:
-                add_payment_info(s, token)
-                write_account_to_db(
-                    email, password, first_name, last_name, phone_num, acc_type
-                )
-                x += 1
-                print()
-                thread_success(f"Generated Account {x}/{num_accs} [{email}]")
+                token = create(s, first_name, last_name, email, password, phone_num)
             except Exception as e:
-                print(e)
-                thread_error("Error adding payment info")
+                thread_error(e)
                 gen(1, acc_type)
                 continue
+
+            if token != None:
+                try:
+                    add_payment_info(s, token)
+                    write_account_to_db(
+                        email, password, first_name, last_name, phone_num, acc_type
+                    )
+                    x += 1
+                    print()
+                    thread_success(f"Generated Account {x}/{num_accs} [{email}]")
+                except Exception as e:
+                    print(e)
+                    thread_error("Error adding payment info")
+                    gen(1, acc_type)
+                    continue
+    except (KeyboardInterrupt, SystemExit):
+        sys.exit(0)
 
 def gen_phone_num():
     fake = Faker()
