@@ -80,8 +80,24 @@ def gen_email_8(first_name, last_name, fake_domain):
 def gen_email_9(first_name, last_name, fake_domain):
     return f"{RandomWord().word()}{RandomWord().word()}{first_name[:1].upper()}{last_name[:1].upper()}{randint(1, 99)}@{fake_domain}"
 
+def gen_email_10(first_name, last_name, fake_domain):
+    fake = Faker()
+    base_string = f"{fake.profile()['username']}"
+
+    cases = [1, 2, 3, 4]
+    chosen_case = choice(cases)
+
+    if chosen_case == 1:
+        return f"{base_string}@{fake.domain}".lower()
+    elif chosen_case == 2:
+        return f"{base_string}{randint(1, 999)}@{fake.domain}".lower()
+    elif chosen_case == 3:
+        return f"{first_name[:1].upper()}{base_string.lower()}@{fake_domain.lower()}"
+    elif chosen_case == 4:
+        return f"{first_name[:1].upper()}{base_string.lower()}{randint(10, 99)}@{fake_domain.lower()}"
+
 # TODO:add weights to each one
-gen_email_methods = [gen_email, gen_email_2, gen_email_3, gen_email_4, gen_email_5, gen_email_6, gen_email_7, gen_email_8, gen_email_9]
+gen_email_methods = [gen_email, gen_email_2, gen_email_3, gen_email_4, gen_email_5, gen_email_6, gen_email_7, gen_email_8, gen_email_9, gen_email_10]
 
 def thread_log(message):
     msg = f"[{threading.current_thread().name}] <{datetime.utcnow()}> {message}"
