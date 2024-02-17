@@ -213,6 +213,7 @@ def write_account_to_db(email, password, first_name, last_name, phone_num, acc_t
         "acc_type": acc_type,
         "version": 1,
         "active": True,
+        "suspended": False,
         "created_at": time.time(),
     }
 
