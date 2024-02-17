@@ -143,7 +143,6 @@ def gen(num_accs, acc_type):
         except Exception as e:
             thread_error(e)
             return gen(1, acc_type)    
-        
 
         if token != None:
             try:
@@ -157,6 +156,7 @@ def gen(num_accs, acc_type):
             except Exception as e:
                 print(e)
                 thread_error("Error adding payment info")
+                return gen(1, acc_type)
 
 def gen_phone_num():
     fake = Faker()
