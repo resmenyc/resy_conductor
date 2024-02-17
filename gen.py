@@ -142,7 +142,8 @@ def gen(num_accs, acc_type):
             token = create(s, first_name, last_name, email, password, phone_num)
         except Exception as e:
             thread_error(e)
-            return gen(1, acc_type)    
+            gen(1, acc_type)
+            continue
 
         if token != None:
             try:
@@ -156,7 +157,8 @@ def gen(num_accs, acc_type):
             except Exception as e:
                 print(e)
                 thread_error("Error adding payment info")
-                return gen(1, acc_type)
+                gen(1, acc_type)
+                continue
 
 def gen_phone_num():
     fake = Faker()
@@ -227,7 +229,7 @@ def create(s, first_name, last_name, email, password, phone_num):
         "password": password,
     }
 
-    res = s.post(url, headers=headers, data=payload, proxies=proxies.get_proxy(), verify=False)
+    res = s.post(url, headers=headers, data=payload, proxies=proxies.get_proxy(), verify=False, timeout=10)
     if res.status_code != 201:
         # print("Retrying...", res.text)
 
@@ -260,7 +262,7 @@ def add_payment_info(s, token):
         "authorization": 'ResyAPI api_key="AIcdK2rLXG6TYwJseSbmrBAy3RP81ocd"',
     }
 
-    res = s.post(url, headers=headers, proxies=proxies.get_proxy(), verify=False)
+    res = s.post(url, headers=headers, proxies=proxies.get_proxy(), verify=False, timeout=10)
 
     client_secret = res.json()["client_secret"]
     client_id = client_secret.split("_secret")[0]
@@ -323,7 +325,7 @@ def add_payment_info(s, token):
     }
 
     res3 = requests.post(
-        url3, data=payload3, headers=headers3, proxies=proxies.get_proxy(), verify=False
+        url3, data=payload3, headers=headers3, proxies=proxies.get_proxy(), verify=False, timeout=10
     )
 
 
