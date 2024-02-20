@@ -259,7 +259,7 @@ def create(s, first_name, last_name, email, password, phone_num):
         "User-Agent": RESY_UA,
     }
 
-    phone_num_prefix = ["347", "212", "917", "646"]
+    phone_num_prefix = ["347", "212", "917", "646", "718"]
 
     payload = {
         "first_name": first_name,

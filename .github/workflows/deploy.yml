@@ -1,4 +1,4 @@
-name: Deploy Conductor To Gengar Server
+name: Deploy Conductor To Mewtwo Server
 on:
   push:
     branches:
@@ -13,7 +13,7 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         with:
           sync: true
-          host: ${{ secrets.GENGAR_HOST }}
+          host: ${{ secrets.MEWTWO_HOST }}
           username: ${{ secrets.GENGAR_USER }}
           password: ${{ secrets.GENGAR_PASS }}
           script: |
