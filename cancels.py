@@ -65,6 +65,7 @@ def init():
 
         x += 1
         utils.thread_success(f"Checked reservation {x}/{len(reservations)}")
+        time.sleep(1)
     end_msg = f"Finished checking {len(reservations)} accounts, deleted {delete_accs} (accounts), cancelled {cancelled_res}"
     utils.thread_success(
         f"\n{end_msg}"
