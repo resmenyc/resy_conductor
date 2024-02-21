@@ -56,10 +56,11 @@ def init():
 
         if not acc_has_res:
             utils.thread_error("Account has no reservations, cancelling")
+            database.delete_account({"email": res["email"]})
             database.update_reservations(
                 {"email": res["email"]}, {"$set": {"reviewed": True, "cancelled": True}}
             )
-            discord.cancels_wh(f"Cancelled a reservation for {res['email']} on {res['date']} at {res['venue_name']}")
+            discord.cancels_wh(f"Cancelled a reservation for {res['email']} on {res['date']} at {res['venue_name']} [NoRes]")
             cancelled_res += 1
 
         x += 1
