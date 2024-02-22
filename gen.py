@@ -215,7 +215,7 @@ def gen_phone_num():
     phone_num = phone_num.replace(")", "")
 
     # replace the first three characters with 212
-    phone_num = phone_num.replace(phone_num[0:3], "347", 1)
+    # phone_num = phone_num.replace(phone_num[0:3], "347", 1)
 
     return phone_num
 
@@ -257,12 +257,10 @@ def create(s, first_name, last_name, email, password, phone_num):
         "Origin": "https://resy.com"
     }
 
-    phone_num_prefix = ["347", "212", "917", "646", "718"]
-
     payload = {
         "first_name": first_name,
         "last_name": last_name,
-        "mobile_number": f"+1{phone_num.replace(phone_num[0:3], choice(phone_num_prefix), 1)}",
+        "mobile_number": f"+1{gen_phone_num()}",
         "em_address": email,
         "policies_accept": 1,
         "marketing_opt_in": 0,
@@ -283,7 +281,7 @@ def create(s, first_name, last_name, email, password, phone_num):
             last_name,
             email,
             password,
-            f"{phone_num.replace(phone_num[0:3], choice(phone_num_prefix), 1)}",
+            phone_num,
         )
 
     auth_token = res.json()["user"]["token"]
