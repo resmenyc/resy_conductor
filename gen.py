@@ -253,8 +253,8 @@ def create(s, first_name, last_name, email, password, phone_num):
         "Authorization": 'ResyAPI api_key="AIcdK2rLXG6TYwJseSbmrBAy3RP81ocd"',
         "Cache-Control": "no-cache",
         "Content-Type": "application/x-www-form-urlencoded",
-        "Host": "api.resy.com",
         "User-Agent": RESY_UA,
+        "Origin": "https://resy.com"
     }
 
     phone_num_prefix = ["347", "212", "917", "646", "718"]
@@ -270,13 +270,13 @@ def create(s, first_name, last_name, email, password, phone_num):
         "device_type_id": 3,
         "device_token": str(uuid.uuid4()),
         "isNonUS": 0,
-        "password": password,
+        "password": password
     }
 
     res = s.post(url, headers=headers, data=payload, proxies=proxies.get_proxy(), verify=False, timeout=10)
     if res.status_code != 201:
-        # print("Retrying...", res.text)
-
+        print("Retrying...", res.text)
+        phone_num = gen_phone_num()
         return create(
             s,
             first_name,
@@ -347,9 +347,11 @@ def add_payment_info(s, token):
     }
 
     try: 
-        res2 = s.post(url2, data=payload2, headers=headers2, verify=False, timeout=10)
+        res2 = s.post(url2, data=payload2, headers=headers2, timeout=10)
     except Exception as e:
         thread_error(e)
+        time.sleep(1)
+        print(e, "retrying")
         return add_payment_info(s, token)
 
     if not res2.ok:
