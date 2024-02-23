@@ -87,7 +87,7 @@ def gen_email_10(first_name, last_name, fake_domain):
     fake = Faker()
     base_string = f"{fake.profile()['username']}"
 
-    cases = [1, 2, 4]
+    cases = [1, 2, 4, 5, 6]
     chosen_case = choice(cases)
 
     if chosen_case == 1:
@@ -96,6 +96,10 @@ def gen_email_10(first_name, last_name, fake_domain):
         return f"{base_string}{randint(1, 999)}@{fake_domain}".lower()
     elif chosen_case == 4:
         return f"{first_name[:1].upper()}{base_string.lower()}{randint(10, 99)}@{fake_domain.lower()}"
+    elif chosen_case == 5:
+        return f"{first_name[:1]}{last_name}{base_string.lower()}@{fake_domain.lower()}"
+    elif chosen_case == 6:
+        return f"{first_name[:1]}{last_name}{base_string.lower()}{randint(1, 999)}@{fake_domain.lower()}"
 
 # TODO:add weights to each one
 gen_email_methods = [gen_email, gen_email_2, gen_email_4, gen_email_5, gen_email_6, gen_email_7, gen_email_8, gen_email_9, gen_email_10]
