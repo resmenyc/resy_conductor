@@ -261,6 +261,7 @@ def create(s, first_name, last_name, email, password, phone_num):
         "Accept-Language": "en-US,en;q=0.9",
         "Authorization": 'ResyAPI api_key="AIcdK2rLXG6TYwJseSbmrBAy3RP81ocd"',
         "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
         "Content-Type": "application/x-www-form-urlencoded",
         "User-Agent": RESY_UA,
         "Origin": "https://resy.com"
