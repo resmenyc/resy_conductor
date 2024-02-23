@@ -21,11 +21,15 @@ def init():
 
     shuffle(accounts)
 
+    new_suspended_emails = []
     x = 0
     for account in accounts[:len(accounts)//SUSPEND_FACTOR]:
-        database.update_account({"email": account["email"]}, {"$set": {"suspended": True}})
+        new_suspended_emails.append(account["email"])
         x += 1
         utils.thread_log(f"Suspended account {x}/{len(accounts)//SUSPEND_FACTOR}")
+    
+    database.update_accounts({"email": {"$in": new_suspended_emails}}, {"$set": {"suspended": True}})
+
 
     end_msg = f"Successfully marked {len(accounts)//SUSPEND_FACTOR} accounts as suspended and unsuspended old accounts"
     utils.thread_success(f"\n{end_msg}")
