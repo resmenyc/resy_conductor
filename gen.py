@@ -104,6 +104,10 @@ def gen_email_10(first_name, last_name, fake_domain):
 # TODO:add weights to each one
 gen_email_methods = [gen_email, gen_email_2, gen_email_4, gen_email_5, gen_email_6, gen_email_7, gen_email_8, gen_email_9, gen_email_10]
 
+# TODO add weights to each one
+for _ in range(4):
+    gen_email_methods.append(gen_email_10)
+
 def thread_log(message):
     msg = f"[{threading.current_thread().name}] <{datetime.utcnow()}> {message}"
 
