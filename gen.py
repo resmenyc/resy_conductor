@@ -337,7 +337,13 @@ def add_payment_info(s, token):
         "authorization": 'ResyAPI api_key="AIcdK2rLXG6TYwJseSbmrBAy3RP81ocd"',
     }
 
-    res = s.post(url, headers=headers, proxies=proxies.get_proxy(), verify=False, timeout=10)
+    try: 
+        res = s.post(url, headers=headers, proxies=proxies.get_proxy(), verify=False, timeout=10)
+    except Exception as e:
+        thread_error(e)
+        time.sleep(1)
+        print(e, "retrying")
+        return add_payment_info(s, token)
 
     client_secret = res.json()["client_secret"]
     client_id = client_secret.split("_secret")[0]
@@ -407,10 +413,17 @@ def add_payment_info(s, token):
         "accept-encoding": "br;q=1.0, gzip;q=0.9, deflate;q=0.8",
     }
 
-    res3 = requests.post(
-        url3, data=payload3, headers=headers3, proxies=proxies.get_proxy(), verify=False, timeout=10
-    )
 
+
+    try:
+        res3 = requests.post(
+            url3, data=payload3, headers=headers3, proxies=proxies.get_proxy(), verify=False, timeout=10
+        )    
+    except Exception as e:
+        thread_error(e)
+        time.sleep(1)
+        print(e, "retrying")
+        return add_payment_info(s, token)
 
 if __name__ == "__main__":
     thread_log("Resy Account Generator")
