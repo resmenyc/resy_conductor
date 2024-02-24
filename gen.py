@@ -211,9 +211,11 @@ def gen(num_accs, acc_type):
                     print()
                     if (x != 1) and {num_accs != 1}:
                         thread_success(f"Generated Account {x}/{num_accs} [{email}]")
+                        print()
                 except Exception as e:
                     print(e)
                     thread_error("Error adding payment info")
+                    print()
                     x += 1
                     t = threading.Thread(
                         target=gen,
@@ -227,9 +229,9 @@ def gen(num_accs, acc_type):
     except (KeyboardInterrupt, SystemExit):
         sys.exit(0)
 
-    print()
     
     if num_accs != 1:
+        print()
         thread_success(f"THREAD COMPLETE, QUITTING THREAD [{threading.active_count()}]")
 
 def gen_phone_num():
