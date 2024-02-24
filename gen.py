@@ -243,7 +243,7 @@ def gen_phone_num():
     
     nyc_codes = ["917", "347", "212", "646"]
     use_nyc_codes_odds = randint(0, 100)
-    if use_nyc_codes_odds > 90:
+    if use_nyc_codes_odds > 70:
         phone_num = phone_num.replace(phone_num[0:3], choice(nyc_codes), 1)
 
     # replace the first three characters with 212
