@@ -209,7 +209,8 @@ def gen(num_accs, acc_type):
                     )
                     x += 1
                     print()
-                    thread_success(f"Generated Account {x}/{num_accs} [{email}]")
+                    if (x != 1) and {num_accs != 1}:
+                        thread_success(f"Generated Account {x}/{num_accs} [{email}]")
                 except Exception as e:
                     print(e)
                     thread_error("Error adding payment info")
