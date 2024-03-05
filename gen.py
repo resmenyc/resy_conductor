@@ -2,7 +2,7 @@ import requests
 import os
 from faker import Faker
 from datetime import datetime
-from random import randint, choice
+from random import randint, choice, getrandbits
 import secrets
 import uuid
 import string
@@ -119,8 +119,35 @@ def gen_email_10(first_name, last_name, fake_domain):
     elif chosen_case == 6:
         return f"{first_name[:1]}{last_name}{base_string.lower()}{randint(1, 999)}@{fake_domain.lower()}"
 
+def gen_email_16(first_name, last_name, fake_domain):
+    fake = Faker()
+    base_string = f"{fake.profile()['username']}"
+
+    add_word = bool(getrandbits(1))
+
+    if add_word:
+        return f"{base_string}{RandomWord().word()}{randint(1, 999)}@{fake_domain}".lower()
+    else:
+        return f"{base_string}{randint(1, 999)}@{fake_domain}".lower()
+
 # TODO:add weights to each one
-gen_email_methods = [gen_email, gen_email_2, gen_email_4, gen_email_5, gen_email_6, gen_email_7, gen_email_8, gen_email_9, gen_email_10, gen_email_11, gen_email_12, gen_email_13, gen_email_14, gen_email_15]
+gen_email_methods = [
+    gen_email,
+    gen_email_2,
+    gen_email_4,
+    gen_email_5,
+    gen_email_6,
+    gen_email_7,
+    gen_email_8,
+    gen_email_9,
+    gen_email_10,
+    gen_email_11,
+    gen_email_12,
+    gen_email_13,
+    gen_email_14,
+    gen_email_15,
+    gen_email_16,
+]
 
 # TODO add weights to each one
 for _ in range(2):
@@ -128,6 +155,9 @@ for _ in range(2):
 
 for _ in range(2):
     gen_email_methods.append(gen_email_15)
+
+for _ in range(5):
+    gen_email_methods.append(gen_email_16)
 
 def thread_log(message):
     msg = f"[{threading.current_thread().name}] <{datetime.utcnow()}> {message}"
