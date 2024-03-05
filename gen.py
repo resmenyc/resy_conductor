@@ -8,7 +8,6 @@ import uuid
 import string
 from dotenv import load_dotenv
 import urllib3
-import multiprocessing
 import threading
 from termcolor import colored
 import colorama
@@ -483,26 +482,15 @@ if __name__ == "__main__":
     for i in range(num_threads):
         thread_id = f"Gen {x + 1}"
 
-        if num_threads > 20:
-            t = multiprocessing.Process(
-                target=gen,
-                name=thread_id,
-                args=(
-                    num_accs,
-                    acc_type,
-                ),
-            )
-            thread_log(f"Starting process {thread_id}")
-        else:
-            t = threading.Thread(
-                target=gen,
-                name=thread_id,
-                args=(
-                    num_accs,
-                    acc_type,
-                ),
-            )
-            thread_log(f"Starting thread {thread_id}")
+        t = threading.Thread(
+            target=gen,
+            name=thread_id,
+            args=(
+                num_accs,
+                acc_type,
+            ),
+        )
+        thread_log(f"Starting thread {thread_id}")
 
         t.start()
 
