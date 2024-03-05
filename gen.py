@@ -454,16 +454,27 @@ if __name__ == "__main__":
     for i in range(num_threads):
         thread_id = f"Gen {x + 1}"
 
-        t = multiprocessing.Process(
-            target=gen,
-            name=thread_id,
-            args=(
-                num_accs,
-                acc_type,
-            ),
-        )
+        if num_threads > 20:
+            t = multiprocessing.Process(
+                target=gen,
+                name=thread_id,
+                args=(
+                    num_accs,
+                    acc_type,
+                ),
+            )
+            thread_log(f"Starting process {thread_id}")
+        else:
+            t = threading.Thread(
+                target=gen,
+                name=thread_id,
+                args=(
+                    num_accs,
+                    acc_type,
+                ),
+            )
+            thread_log(f"Starting thread {thread_id}")
 
-        thread_log(f"Starting process {thread_id}")
         t.start()
 
         x += 1
