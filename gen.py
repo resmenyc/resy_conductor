@@ -44,13 +44,13 @@ def gen_email(first_name, last_name, fake_domain):
     faker_email = fake.email()
 
     base_email_prefix = faker_email.split("@")[0]
-    email = f"{first_name}{base_email_prefix}{randint(10, 999)}@{fake_domain}"
+    email = f"{first_name}{base_email_prefix}{randint(10, 999)}@{fake_domain}".lower()
 
     return email
 
 
 def gen_email_2(first_name, last_name, fake_domain):
-    return f"{first_name}.{last_name}{randint(10, 999)}@{fake_domain}"
+    return f"{first_name}.{last_name}{randint(10, 999)}@{fake_domain}".lower()
 
 
 def gen_email_3(first_name, last_name, fake_domain):
@@ -58,7 +58,7 @@ def gen_email_3(first_name, last_name, fake_domain):
     faker_email = fake.email()
 
     base_email_prefix = faker_email.split("@")[0]
-    email = f"{last_name}{base_email_prefix}{randint(1, 99)}@{fake_domain}"
+    email = f"{last_name}{base_email_prefix}{randint(1, 99)}@{fake_domain}".lower()
 
     return email
 
@@ -91,16 +91,16 @@ def gen_email_13(first_name, last_name, fake_domain):
     return f"{first_name}{RandomWord().word()[:1].lower()}{last_name}{randint(1, 99)}@{fake_domain}".lower()
 
 def gen_email_9(first_name, last_name, fake_domain):
-    return f"{RandomWord().word()}{RandomWord().word()}{first_name[:1].upper()}{last_name[:1].upper()}{randint(1, 99)}@{fake_domain}"
+    return f"{RandomWord().word()}{RandomWord().word()}{first_name[:1].upper()}{last_name[:1].upper()}{randint(1, 99)}@{fake_domain}".lower()
 
 
 def gen_email_14(first_name, last_name, fake_domain):
-    return f"{RandomWord().word()}{RandomWord().word()}{first_name[:1].upper()}{last_name[:1].upper()}{randint(1, 99)}@{fake_domain}"
+    return f"{RandomWord().word()}{RandomWord().word()}{first_name[:1].upper()}{last_name[:1].upper()}{randint(1, 99)}@{fake_domain}".lower()
 
 def gen_email_15(first_name, last_name, fake_domain):
     fake = Faker()
     base_string = f"{fake.profile()['username']}"
-    return f"{base_string.lower()}{first_name}{randint(1, 99)}@{fake_domain}"
+    return f"{base_string.lower()}{first_name}{randint(1, 99)}@{fake_domain}".lower()
 
 def gen_email_10(first_name, last_name, fake_domain):
     fake = Faker()
