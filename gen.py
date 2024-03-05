@@ -245,6 +245,7 @@ def gen_phone_num():
     phone_num = phone_num.replace("-", "")
     phone_num = phone_num.replace("(", "")
     phone_num = phone_num.replace(")", "")
+    phone_num = phone_num.replace(" " , "")
     
     nyc_codes = ["917", "347", "212", "646"]
     use_nyc_codes_odds = randint(0, 100)
