@@ -247,11 +247,8 @@ def gen_phone_num():
     
     nyc_codes = ["917", "347", "212", "646"]
     use_nyc_codes_odds = randint(0, 100)
-    if use_nyc_codes_odds > 70:
+    if use_nyc_codes_odds > 65:
         phone_num = phone_num.replace(phone_num[0:3], choice(nyc_codes), 1)
-
-    # replace the first three characters with 212
-    # phone_num = phone_num.replace(phone_num[0:3], "347", 1)
 
     return phone_num
 
@@ -379,7 +376,7 @@ def add_payment_info(s, token):
             {
                 "os_version": "17.3.1",
                 "model": "iPhone",
-                "vendor_identifier": "521D44E8-0B56-460D-95A4-D74D91611B1F",
+                "vendor_identifier": "521D44E8-0B56-460D-95A4-D74D99181B1F",
                 "bindings_version": "23.18.2",
                 "lang": "objective-c",
                 "type": "iPhone16,2",
