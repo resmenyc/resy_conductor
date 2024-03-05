@@ -320,13 +320,13 @@ def create(s, first_name, last_name, email, password, phone_num):
         "Connection": "keep-alive",
         "Content-Type": "application/x-www-form-urlencoded",
         "User-Agent": RESY_UA,
-        "Origin": "https://resy.com"
+        "X-Origin": "https://resy.com"
     }
 
     payload = {
         "first_name": first_name,
         "last_name": last_name,
-        "mobile_number": f"+1{gen_phone_num()}",
+        "mobile_number": f"+1{phone_num}",
         "em_address": email,
         "policies_accept": 1,
         "marketing_opt_in": 0,
