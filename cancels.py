@@ -104,7 +104,7 @@ def login(network, account, retrys=0):
 
 
 def check_acc_has_res(network, retrys=0):
-    if retrys > 5:
+    if retrys > 10:
         return False
 
     try:
