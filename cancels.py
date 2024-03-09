@@ -73,7 +73,7 @@ def init():
     discord.logs_wh(end_msg)
 
 def login(network, account, retrys=0):
-    if retrys > 5:
+    if retrys > 10:
         utils.thread_error("Login failed on max attempts, killing account")
         return None, None
 
