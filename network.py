@@ -50,7 +50,9 @@ class Network:
             "Cache-Control": "no-cache",
             "Content-Type": "application/x-www-form-urlencoded",
             "Connection": "keep-alive",
-            "Host": "api.resy.com",
+            "Origin": "https://resy.com",
+            "Referer": "https://resy.com",
+            "X-Origin": "https://resy.com",
             "User-Agent": self.USER_AGENT,
         }
 
