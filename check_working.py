@@ -79,7 +79,7 @@ def login(network, account, retrys=0):
 
     if not login_res.ok:
         if login_res.status_code == 419:
-            utils.thread_warn("Account suspended")
+            utils.thread_warn(f"Account suspended {account['email']}")
         else:
             return login(network, account, retrys=retrys + 1)
 
