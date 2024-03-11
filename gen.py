@@ -307,7 +307,7 @@ def create(s, first_name, last_name, email, password, phone_num):
         "password": password
     }
 
-    res = s.post(url, headers=headers, data=payload, proxies=proxies.get_proxy(), verify=False, timeout=10)
+    res = s.post(url, headers=headers, data=payload, proxies=proxies.get_resi_proxy(), verify=False, timeout=10)
     if res.status_code != 201:
         # print("Retrying...", res.text)
         phone_num = gen_phone_num()
