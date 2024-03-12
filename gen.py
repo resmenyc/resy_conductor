@@ -299,7 +299,7 @@ def create(s, first_name, last_name, email, password, phone_num):
         "first_name": first_name,
         "last_name": last_name,
         "mobile_number": f"+1{gen_phone_num()}",
-        "em_address": email,
+        "em_address": email.lower(),
         "policies_accept": 1,
         "marketing_opt_in": 0,
         "complete": 1,
