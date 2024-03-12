@@ -235,14 +235,15 @@ def gen(num_accs, acc_type):
         thread_success(f"THREAD COMPLETE, QUITTING THREAD [{threading.active_count()}]")
 
 def gen_phone_num():
-    fake = Faker()
-    phone_num = fake.phone_number(locale="en_US")
+    fake = Faker(locale="en_US")
+    phone_num = fake.phone_number()
     if "x" in phone_num:
         phone_num = phone_num.split("x")[0]
     phone_num = phone_num.replace(".", "")
     phone_num = phone_num.replace("-", "")
     phone_num = phone_num.replace("(", "")
     phone_num = phone_num.replace(")", "")
+    phone_num = phone_num.replace("+1", "")
     
     nyc_codes = ["917", "347", "212", "646"]
     use_nyc_codes_odds = randint(0, 100)
