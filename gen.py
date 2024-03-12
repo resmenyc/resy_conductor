@@ -204,7 +204,6 @@ def gen(num_accs, acc_type):
             if token != None:
                 try:
                     last_four = add_payment_info(s, token)
-                    print(last_four)
                     write_account_to_db(
                         email, password, first_name, last_name, phone_num, acc_type, str(last_four)
                     )
