@@ -236,7 +236,7 @@ def gen(num_accs, acc_type):
 
 def gen_phone_num():
     fake = Faker()
-    phone_num = fake.phone_number()
+    phone_num = fake.phone_number(locale="en_US")
     if "x" in phone_num:
         phone_num = phone_num.split("x")[0]
     phone_num = phone_num.replace(".", "")
