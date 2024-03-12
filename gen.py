@@ -203,9 +203,10 @@ def gen(num_accs, acc_type):
 
             if token != None:
                 try:
-                    add_payment_info(s, token)
+                    last_four = add_payment_info(s, token)
+                    print(last_four)
                     write_account_to_db(
-                        email, password, first_name, last_name, phone_num, acc_type
+                        email, password, first_name, last_name, phone_num, acc_type, str(last_four)
                     )
                     x += 1
                     print()
@@ -256,7 +257,7 @@ def gen_phone_num():
     return phone_num
 
 
-def write_account_to_db(email, password, first_name, last_name, phone_num, acc_type):
+def write_account_to_db(email, password, first_name, last_name, phone_num, acc_type, last_four):
     account = {
         "email": email,
         "password": aesCipher.encrypt(password),
@@ -268,6 +269,7 @@ def write_account_to_db(email, password, first_name, last_name, phone_num, acc_t
         "active": True,
         "suspended": False,
         "created_at": time.time(),
+        "last_four": last_four
     }
 
     database.upload_account(account)
@@ -416,8 +418,6 @@ def add_payment_info(s, token):
         "accept-encoding": "br;q=1.0, gzip;q=0.9, deflate;q=0.8",
     }
 
-
-
     try:
         res3 = requests.post(
             url3, data=payload3, headers=headers3, proxies=proxies.get_proxy(), verify=False, timeout=10
@@ -427,6 +427,9 @@ def add_payment_info(s, token):
         time.sleep(1)
         print(e, "retrying")
         return add_payment_info(s, token)
+
+    last_four = os.getenv("CARD_NUM")[-4:]
+    return last_four
 
 if __name__ == "__main__":
     thread_log("Resy Account Generator")
