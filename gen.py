@@ -429,7 +429,7 @@ if __name__ == "__main__":
     print()
     thread_error("MAKE SURE YOU HAVE A VPN ON RIGHT NOW")
     print()
-    if sys.argv[1]:
+    if len(sys.argv) > 1:
         num_accs = int(sys.argv[1])
         num_threads = int(sys.argv[2])
         acc_type = sys.argv[3]
