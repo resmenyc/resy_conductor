@@ -427,12 +427,16 @@ if __name__ == "__main__":
     thread_log("Resy Account Generator")
     thread_log("For use for ResMe research purposes only")
     print()
-    thread_error("MAKE SURE YOU HAVE A VPN ON RIGHT NOW, THEN PRESS ENTER! ")
+    thread_error("MAKE SURE YOU HAVE A VPN ON RIGHT NOW")
     print()
-    input()
-    num_accs = int(input("How many accounts to create per thread?: "))
-    num_threads = int(input("Number of threads?: "))
-    acc_type = input("Are these elite accounts? (y/n): ")
+    if sys.argv[1]:
+        num_accs = int(sys.argv[1])
+        num_threads = int(sys.argv[2])
+        acc_type = sys.argv[3]
+    else:
+        num_accs = int(input("How many accounts to create per thread?: "))
+        num_threads = int(input("Number of threads?: "))
+        acc_type = input("Are these elite accounts? (y/n): ")
 
     if acc_type.lower() == "y":
         acc_type = "elite"
