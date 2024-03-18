@@ -208,12 +208,11 @@ def gen(num_accs, acc_type):
                         email, password, first_name, last_name, phone_num, acc_type, str(last_four)
                     )
                     x += 1
+
+
+                    thread_success(f"Generated Account {x}/{num_accs} [{email}]")
                     print()
-                    if (x != 1) and {num_accs != 1}:
-                        thread_success(f"Generated Account {x}/{num_accs} [{email}]")
-                        print()
                 except Exception as e:
-                    print(e)
                     thread_error("Error adding payment info")
                     print()
                     x += 1
@@ -289,6 +288,7 @@ def create(s, first_name, last_name, email, password, phone_num):
         "Accept-Language": "en-US,en;q=0.9",
         "Authorization": 'ResyAPI api_key="AIcdK2rLXG6TYwJseSbmrBAy3RP81ocd"',
         "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
         "Content-Type": "application/x-www-form-urlencoded",
         "User-Agent": RESY_UA,
         "Origin": "https://resy.com"
@@ -423,7 +423,6 @@ def add_payment_info(s, token):
     except Exception as e:
         thread_error(e)
         time.sleep(1)
-        print(e, "retrying")
         return add_payment_info(s, token)
 
     last_four = os.getenv("CARD_NUM")[-4:]
