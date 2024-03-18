@@ -421,8 +421,8 @@ def add_payment_info(s, token):
             url3, data=payload3, headers=headers3, proxies=proxies.get_proxy(), verify=False, timeout=10
         )    
     except Exception as e:
-        thread_error(e)
-        time.sleep(1)
+        thread_error("Connection Error")
+        time.sleep(0.2)
         return add_payment_info(s, token)
 
     last_four = os.getenv("CARD_NUM")[-4:]
