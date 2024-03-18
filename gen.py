@@ -163,6 +163,7 @@ def gen_password():
 
 
 def gen(num_accs, acc_type):
+    err_cnt = 0
     try:
         x = 0
         for i in range(num_accs):
@@ -191,14 +192,7 @@ def gen(num_accs, acc_type):
             except Exception as e:
                 thread_error("Connection error on create account")
                 x+= 1
-                threading.Thread(
-                    target=gen,
-                    name=f"SomeTryAgainThread",
-                    args=(
-                        1,
-                        acc_type,
-                    ),
-                ).start()
+                err_cnt += 1
                 continue
 
             if token != None:
@@ -209,26 +203,27 @@ def gen(num_accs, acc_type):
                     )
                     x += 1
 
-
                     thread_success(f"Generated Account {x}/{num_accs} [{email}]")
                     print()
                 except Exception as e:
                     thread_error("Error adding payment info")
                     print()
                     x += 1
-                    t = threading.Thread(
-                        target=gen,
-                        name=f"SomeTryAgainThread",
-                        args=(
-                            1,
-                            acc_type,
-                        ),
-                    ).start()
+                    err_cnt += 1
                     continue
     except (KeyboardInterrupt, SystemExit):
         sys.exit(0)
 
-    
+    if err_cnt > 0:
+        threading.Thread(
+            target=gen,
+            name=f"SomeTryAgainThread",
+            args=(
+                err_cnt,
+                acc_type,
+            ),
+        ).start()
+
     if num_accs != 1:
         print()
         thread_success(f"THREAD COMPLETE, QUITTING THREAD [{threading.active_count()}]")
@@ -465,5 +460,6 @@ if __name__ == "__main__":
 
         thread_log(f"Starting thread {thread_id}")
         t.start()
+        time.sleep(0.5)
 
         x += 1
