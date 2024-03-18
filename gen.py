@@ -189,7 +189,7 @@ def gen(num_accs, acc_type):
             try:
                 token = create(s, first_name, last_name, email, password, phone_num)
             except Exception as e:
-                thread_error(e)
+                thread_error("Connection error on create account")
                 x+= 1
                 threading.Thread(
                     target=gen,
@@ -288,10 +288,11 @@ def create(s, first_name, last_name, email, password, phone_num):
         "Accept-Language": "en-US,en;q=0.9",
         "Authorization": 'ResyAPI api_key="AIcdK2rLXG6TYwJseSbmrBAy3RP81ocd"',
         "Cache-Control": "no-cache",
-        "Connection": "keep-alive",
         "Content-Type": "application/x-www-form-urlencoded",
         "User-Agent": RESY_UA,
-        "Origin": "https://resy.com"
+        "Origin": "https://resy.com",
+        "Referer": "https://resy.com/",
+        "X-Origin": "https://resy.com"
     }
 
     payload = {
@@ -343,9 +344,8 @@ def add_payment_info(s, token):
     try: 
         res = s.post(url, headers=headers, proxies=proxies.get_proxy(), verify=False, timeout=10)
     except Exception as e:
-        thread_error(e)
-        time.sleep(1)
-        print(e, "retrying")
+        thread_error("Connection error first payment res")
+        time.sleep(0.2)
         return add_payment_info(s, token)
 
     client_secret = res.json()["client_secret"]
@@ -390,8 +390,8 @@ def add_payment_info(s, token):
     try: 
         res2 = s.post(url2, data=payload2, headers=headers2, timeout=10)
     except Exception as e:
-        thread_error(e)
-        time.sleep(1)
+        thread_error("Connection error res 2 payment")
+        time.sleep(0.2)
         print(e, "retrying")
         return add_payment_info(s, token)
 
