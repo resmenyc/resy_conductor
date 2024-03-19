@@ -1,7 +1,6 @@
 import requests
 import os
 from faker import Faker
-from datetime import datetime
 from random import randint, choice
 import secrets
 import uuid
@@ -12,243 +11,103 @@ import threading
 from termcolor import colored
 import colorama
 from database import Database
+from network import Network
 from aesCipher import AESCipher
 from proxies import Proxies
+from email_gen import EmailGen
 import time
 from wonderwords import RandomWord
 import json
-import urllib3
 import sys
+from utils import Utils
 
+# CONFIG
+# we dont care recursion gang
 sys.setrecursionlimit(9999)
-
-requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = "ALL:@SECLEVEL=1"
 
 colorama.init()
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 load_dotenv()
+
+# LOAD IN CLASSES
+utils = Utils()
 database = Database()
 proxies = Proxies()
-aesCipher = AESCipher(os.getenv("ENCRYPTION_KEY"))
-domains = []
+fake = Faker()
+email_gen = EmailGen()
 
-RESY_UA = "Resy/2.77 (com.resy.ResyApp; build:5035; iOS 17.3.0) Alamofire/5.8.0"
+if not os.getenv("ENCRYPTION_KEY"):
+    utils.thread_error("No encryption key set")
+
+aesCipher = AESCipher(os.getenv("ENCRYPTION_KEY"))
+
+# GLOBALS
+domains = []
+if not os.getenv("DOMAINS"):
+    utils.thread_error("No domains found, please set them in .env")
+    sys.exit(1)
+for domain in os.getenv("DOMAINS").split(","):
+    domains.append(domain)
+
 STRIPE_UA = "Resy/4977 CFNetwork/1492.0.1 Darwin/23.3.0"
 STRIPE_P_UA = "stripe-ios/23.18.2; variant.legacy; PaymentSheet"
 
+def gen(num_accs, acc_type, child=False):
+    failure_cnt = 0
 
-def gen_email(first_name, last_name, fake_domain):
-    fake = Faker()
-    faker_email = fake.email()
-
-    base_email_prefix = faker_email.split("@")[0]
-    email = f"{first_name}{base_email_prefix}{randint(10, 999)}@{fake_domain}"
-
-    return email
-
-
-def gen_email_2(first_name, last_name, fake_domain):
-    return f"{first_name}.{last_name}{randint(10, 999)}@{fake_domain}"
-
-
-def gen_email_3(first_name, last_name, fake_domain):
-    fake = Faker()
-    faker_email = fake.email()
-
-    base_email_prefix = faker_email.split("@")[0]
-    email = f"{last_name}{base_email_prefix}{randint(1, 99)}@{fake_domain}"
-
-    return email
-
-def gen_email_4(first_name, last_name, fake_domain):
-    return f"{first_name}{RandomWord().word()}{randint(1, 999)}@{fake_domain}".lower()
-
-def gen_email_5(first_name, last_name, fake_domain):
-    first_initial = first_name[:1]
-    return f"{first_initial}{last_name}{randint(10, 999)}@{fake_domain}".lower()
-
-def gen_email_6(first_name, last_name, fake_domain):
-    last_initial = last_name[:1]
-    return f"{first_name}{last_initial}{randint(10, 999)}@{fake_domain}".lower()
-
-def gen_email_7(first_name, last_name, fake_domain):
-    return gen_email_8(first_name, last_name, fake_domain)
-
-
-def gen_email_8(first_name, last_name, fake_domain):
-    return f"{RandomWord().word()}{last_name}{randint(1, 999)}@{fake_domain}".lower()
-
-
-def gen_email_11(first_name, last_name, fake_domain):
-    return f"{first_name}{RandomWord().word()}{randint(1, 999)}@{fake_domain}".lower()
-
-def gen_email_12(first_name, last_name, fake_domain):
-    return f"{first_name}.{RandomWord().word()[:1].lower()}.{last_name}{randint(1, 99)}@{fake_domain}".lower()
-
-def gen_email_13(first_name, last_name, fake_domain):
-    return f"{first_name}{RandomWord().word()[:1].lower()}{last_name}{randint(1, 99)}@{fake_domain}".lower()
-
-def gen_email_9(first_name, last_name, fake_domain):
-    return f"{RandomWord().word()}{RandomWord().word()}{first_name[:1].upper()}{last_name[:1].upper()}{randint(1, 99)}@{fake_domain}"
-
-
-def gen_email_14(first_name, last_name, fake_domain):
-    return f"{RandomWord().word()}{RandomWord().word()}{first_name[:1].upper()}{last_name[:1].upper()}{randint(1, 99)}@{fake_domain}"
-
-def gen_email_15(first_name, last_name, fake_domain):
-    fake = Faker()
-    base_string = f"{fake.profile()['username']}"
-    return f"{base_string.lower()}{first_name}{randint(1, 99)}@{fake_domain}"
-
-def gen_email_10(first_name, last_name, fake_domain):
-    fake = Faker()
-    base_string = f"{fake.profile()['username']}"
-
-    cases = [1, 2, 4, 5, 6]
-    chosen_case = choice(cases)
-
-    if chosen_case == 1:
-        return f"{base_string}{randint(1, 999)}@{fake_domain}".lower()
-    elif chosen_case == 2:
-        return f"{base_string}{randint(1, 999)}@{fake_domain}".lower()
-    elif chosen_case == 4:
-        return f"{first_name[:1].upper()}{base_string.lower()}{randint(10, 99)}@{fake_domain.lower()}"
-    elif chosen_case == 5:
-        return f"{first_name[:1]}{last_name}{base_string.lower()}@{fake_domain.lower()}"
-    elif chosen_case == 6:
-        return f"{first_name[:1]}{last_name}{base_string.lower()}{randint(1, 999)}@{fake_domain.lower()}"
-
-# TODO:add weights to each one
-gen_email_methods = [gen_email, gen_email_2, gen_email_4, gen_email_5, gen_email_6, gen_email_7, gen_email_8, gen_email_9, gen_email_10, gen_email_11, gen_email_12, gen_email_13, gen_email_14, gen_email_15]
-
-# TODO add weights to each one
-for _ in range(4):
-    gen_email_methods.append(gen_email_10)
-
-def thread_log(message):
-    msg = f"[{threading.current_thread().name}] <{datetime.utcnow()}> {message}"
-
-    print(colored(msg, "cyan"))
-
-
-def thread_error(message):
-    msg = f"[{threading.current_thread().name}] <{datetime.utcnow()}> {message}"
-
-    print(colored(msg, "red"))
-
-
-def thread_warn(message):
-    msg = f"[{threading.current_thread().name}] <{datetime.utcnow()}> {message}"
-
-    print(colored(msg, "yellow"))
-
-
-def thread_success(message):
-    msg = f"[{threading.current_thread().name}] <{datetime.utcnow()}> {message}"
-
-    print(colored(msg, "green"))
-
-
-def thread_print(message):
-    print(f"[{threading.current_thread().name}] <{datetime.utcnow()}> {message}")
-
-
-def gen_password():
-    alphabet = string.ascii_letters + string.digits
-    password = "".join(secrets.choice(alphabet) for i in range(randint(16, 20)))
-
-    return f"${password}111"
-
-
-def gen(num_accs, acc_type):
-    err_cnt = 0
     try:
-        x = 0
-        for i in range(num_accs):
-            s = requests.Session()
+        cnt = 0
+        for _ in range(num_accs):
+            network = Network("")
 
-            fake_domain = choice(domains)
-            fake = Faker()
-            name = fake.name()
-            first_name = name.split(" ")[0]
-
-            while len(first_name) <= 4:
-                name = fake.name()
-                first_name = name.split(" ")[0]
-
-            last_name = name.split(" ")[1]
-
-            # TODO: add more ways to do this so they arent all templated the same
-            email_method = choice(gen_email_methods)
-            email = email_method(first_name, last_name, fake_domain)
+            # Generate fake information
+            first_name, last_name = gen_name()
+            email = email_gen.gen(first_name, last_name, choice(domains))
             password = gen_password()
-
             phone_num = gen_phone_num()
 
             try:
-                token = create(s, first_name, last_name, email, password, phone_num)
+                create_res = network.create(first_name, last_name, email, password, phone_num)
             except Exception as e:
-                thread_error("Connection error on create account")
-                x+= 1
-                err_cnt += 1
+                utils.thread_error(f"Error creating account: {e}")
+                failure_cnt += 1
                 continue
 
-            if token != None:
-                try:
-                    last_four = add_payment_info(s, token)
-                    write_account_to_db(
-                        email, password, first_name, last_name, phone_num, acc_type, str(last_four)
-                    )
-                    x += 1
+            if not create_res.ok:
+                failure_cnt += 1
+                continue
 
-                    thread_success(f"Generated Account {x}/{num_accs} [{email}]")
-                    print()
-                except Exception as e:
-                    thread_error("Error adding payment info")
-                    print()
-                    x += 1
-                    err_cnt += 1
+            auth_token = create_res.json()["user"]["token"]
+            network.set_auth_token(auth_token)
+
+            try:
+                last_four = add_payment_info(network, auth_token)
+                if last_four is None:
+                    failure_cnt += 1
                     continue
+
+                write_account_to_db(
+                    email, password, first_name, last_name, phone_num, acc_type, str(last_four)
+                )
+                cnt += 1
+
+                utils.thread_success(f"Created account {cnt}/{num_accs} | {email}")
+            except Exception as e:
+                utils.thread_error(f"Error during or after adding payment info: {e}")
+                failure_cnt += 1
+                continue
+
+        if failure_cnt > 0:
+            gen(failure_cnt, acc_type, child=True)
+
+        if not child:
+            print()
+            utils.thread_success(f"THREAD COMPLETE, QUITTING THREAD [{threading.active_count()}]")
+
     except (KeyboardInterrupt, SystemExit):
         sys.exit(0)
-
-    if err_cnt > 0:
-        threading.Thread(
-            target=gen,
-            name=f"SomeTryAgainThread",
-            args=(
-                err_cnt,
-                acc_type,
-            ),
-        ).start()
-
-    if num_accs != 1:
-        print()
-        thread_success(f"THREAD COMPLETE, QUITTING THREAD [{threading.active_count()}]")
-
-def gen_phone_num():
-    fake = Faker(locale="en_US")
-    phone_num = fake.phone_number()
-    if "x" in phone_num:
-        phone_num = phone_num.split("x")[0]
-    phone_num = phone_num.replace(".", "")
-    phone_num = phone_num.replace("-", "")
-    phone_num = phone_num.replace("(", "")
-    phone_num = phone_num.replace(")", "")
-    phone_num = phone_num.replace("+1", "")
-    
-    nyc_codes = ["917", "347", "212", "646"]
-    use_nyc_codes_odds = randint(0, 100)
-    if use_nyc_codes_odds > 70:
-        phone_num = phone_num.replace(phone_num[0:3], choice(nyc_codes), 1)
-
-    # replace the first three characters with 212
-    # phone_num = phone_num.replace(phone_num[0:3], "347", 1)
-
-    return phone_num
-
 
 def write_account_to_db(email, password, first_name, last_name, phone_num, acc_type, last_four):
     account = {
@@ -267,89 +126,91 @@ def write_account_to_db(email, password, first_name, last_name, phone_num, acc_t
 
     database.upload_account(account)
 
+def gen_name():    
+    name = fake.name()
+    first_name = name.split(" ")[0]
 
-def write_account_to_file(email, password, first_name, last_name, phone_num):
-    with open("accs.txt", "a+") as f:
-        f.write(f"{email}|{password}|{first_name}|{last_name}|{phone_num}\n")
+    while len(first_name) <= 4:
+        name = fake.name()
+        first_name = name.split(" ")[0]
 
+    last_name = name.split(" ")[1]
 
-def create(s, first_name, last_name, email, password, phone_num):
-    retry_cnt = 0
-    url = "https://api.resy.com/2/user/registration"
-
-    headers = {
-        "Accept": "application/json, text/plain, */*",
-        "Accept-Encoding": "gzip, deflate, br",
-        "Accept-Language": "en-US,en;q=0.9",
-        "Authorization": 'ResyAPI api_key="AIcdK2rLXG6TYwJseSbmrBAy3RP81ocd"',
-        "Cache-Control": "no-cache",
-        "Content-Type": "application/x-www-form-urlencoded",
-        "User-Agent": RESY_UA,
-        "Origin": "https://resy.com",
-        "Referer": "https://resy.com/",
-        "X-Origin": "https://resy.com"
-    }
-
-    payload = {
-        "first_name": first_name,
-        "last_name": last_name,
-        "mobile_number": f"+1{gen_phone_num()}",
-        "em_address": email.lower(),
-        "policies_accept": 1,
-        "marketing_opt_in": 0,
-        "complete": 1,
-        "device_type_id": 3,
-        "device_token": str(uuid.uuid4()),
-        "isNonUS": 0,
-        "password": password
-    }
-
-    res = s.post(url, headers=headers, data=payload, proxies=proxies.get_proxy(), verify=False, timeout=10)
-    if res.status_code != 201:
-        # print("Retrying...", res.text)
-        phone_num = gen_phone_num()
-        return create(
-            s,
-            first_name,
-            last_name,
-            email,
-            password,
-            phone_num,
-        )
-
-    auth_token = res.json()["user"]["token"]
-
-    return auth_token
+    return first_name, last_name
 
 
-def add_payment_info(s, token):
+def gen_password():
+    special_chars = ["$", "?", "!"]
+    alphabet = string.ascii_letters + string.digits
+    password = "".join(secrets.choice(alphabet) for i in range(randint(16, 20)))
+
+    return f"{choice(special_chars)}{password}{randint(100, 999)}"
+
+
+def gen_phone_num():
+    f = Faker(locale="en_US")
+    phone_num = f.phone_number()
+    if "x" in phone_num:
+        phone_num = phone_num.split("x")[0]
+    phone_num = phone_num.replace(".", "")
+    phone_num = phone_num.replace("-", "")
+    phone_num = phone_num.replace("(", "")
+    phone_num = phone_num.replace(")", "")
+    phone_num = phone_num.replace("+1", "")
+
+    nyc_codes = ["917", "347", "212", "646"]
+    use_nyc_codes_odds = randint(0, 100)
+    if use_nyc_codes_odds > 60:
+        phone_num = phone_num.replace(phone_num[0:3], choice(nyc_codes), 1)
+        
+    return phone_num
+
+def add_payment_info(network, token):
     url = "https://api.resy.com/3/stripe/setup_intent"
 
     headers = {
         "host": "api.resy.com",
         "accept": "*/*",
+        "connection": "keep-alive",
         "x-resy-auth-token": token,
         "accept-encoding": "br;q=1.0, gzip;q=0.9, deflate;q=0.8",
         "x-resy-universal-auth": token,
-        "user-agent": RESY_UA,
-        "accept-language": "en-US;q=1.0",
-        "authorization": 'ResyAPI api_key="AIcdK2rLXG6TYwJseSbmrBAy3RP81ocd"',
+        "user-agent": network.USER_AGENT,
+        "accept-language": "en-US;q=1.0, fr-US;q=0.9",
+        "authorization": network.RESY_KEY,
     }
 
-    try: 
-        res = s.post(url, headers=headers, proxies=proxies.get_proxy(), verify=False, timeout=10)
+    try:
+        res1 = requests.post(url, headers=headers, proxies=proxies.get_proxy(), verify=False, timeout=10)
     except Exception as e:
-        thread_error("Connection error first payment res")
-        time.sleep(0.2)
-        return add_payment_info(s, token)
+        utils.thread_error(f"Error adding payment info 1: {e}")
+        return None
 
-    client_secret = res.json()["client_secret"]
+    if not res1.ok:
+        utils.thread_error(f"Error adding payment info 1: {res1.status_code}")
+        return None
+
+    client_secret = res1.json()["client_secret"]
     client_id = client_secret.split("_secret")[0]
 
     url2 = f"https://api.stripe.com/v1/setup_intents/{client_id}/confirm"
 
+    headers2 = {
+        "host": "api.stripe.com",
+        "content-type": "application/x-www-form-urlencoded",
+        "accept-encoding": "gzip, deflate, br",
+        "stripe-version": "2020-08-27",
+        "user-agent": "Resy/5185 CFNetwork/1492.0.1 Darwin/23.3.0",
+        "connection": "keep-alive",
+        "accept": "*/*",
+        "accept-language": "en-US,en;q=0.9",
+        "x-stripe-user-agent": '{"os_version":"17.3.1","bindings_version":"23.21.0","lang":"objective-c","type":"iPhone16,2","model":"iPhone","vendor_identifier":"521D44E8-0B56-460D-95A4-D74D91611B1F"}',
+        "authorization": "Bearer pk_live_51JdK5FIqT2RuI7QtpZsqeG1GTMZHBTBCTr4r1MZkJJt60ybz3REl92I0uKIynSMIUMXkUlMGAU8B5pRJ0533KImO0006EPpHUI",
+    }
+
     payload2 = {
         "client_secret": client_secret,
+        "expand[0]": "payment_method",
         "payment_method_data[billing_details][address][country]": "US",
         "payment_method_data[billing_details][address][postal_code]": os.getenv(
             "ZIP_CODE"
@@ -358,77 +219,61 @@ def add_payment_info(s, token):
         "payment_method_data[card][exp_month]": os.getenv("CARD_MONTH"),
         "payment_method_data[card][exp_year]": os.getenv("CARD_YEAR"),
         "payment_method_data[card][number]": os.getenv("CARD_NUM"),
-        "payment_method_data[payment_user_agent]": STRIPE_P_UA,
+        "payment_method_data[payment_user_agent]": "stripe-ios/23.21.0; variant.legacy; PaymentSheet",
         "payment_method_data[type]": "card",
         "use_stripe_sdk": "true",
     }
 
-    headers2 = {
-        "Accept": "*/*",
-        "Accept-Language": "en-US,en;q=0.9",
-        "Authorization": "Bearer pk_live_51JdK5FIqT2RuI7QtpZsqeG1GTMZHBTBCTr4r1MZkJJt60ybz3REl92I0uKIynSMIUMXkUlMGAU8B5pRJ0533KImO0006EPpHUI",
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Host": "api.stripe.com",
-        "Stripe-Version": "2020-08-27",
-        "X-Stripe-User-Agent": json.dumps(
-            {
-                "os_version": "17.3.1",
-                "model": "iPhone",
-                "vendor_identifier": "521D44E8-0B56-460D-95A4-D74D91611B1F",
-                "bindings_version": "23.18.2",
-                "lang": "objective-c",
-                "type": "iPhone16,2",
-            }
-        ),
-    }
-
-    try: 
-        res2 = s.post(url2, data=payload2, headers=headers2, timeout=10)
+    try:
+        res2 = requests.post(url2, headers=headers2, data=payload2, timeout=10)
     except Exception as e:
-        thread_error("Connection error res 2 payment")
-        time.sleep(0.2)
-        print(e, "retrying")
-        return add_payment_info(s, token)
+        utils.thread_error(f"Error adding payment info 2: {e}")
+        return None
 
     if not res2.ok:
-        thread_error(res2.status_code)
-        return add_payment_info(s, token)
+        utils.thread_error(f"Error adding payment info 2: {res2.status_code}")
+        return None
 
     payment_method_id = res2.json()["payment_method"]
-
     url3 = "https://api.resy.com/3/stripe/payment_method"
-
-    payload3 = f"is_default=1&stripe_payment_method_id={payment_method_id}"
-    headers3 = {
+    payload3 = f"is_default=1&stripe_payment_method_id={payment_method_id['id']}"
+    headers = {
         "host": "api.resy.com",
         "content-type": "application/x-www-form-urlencoded; charset=utf-8",
         "accept": "*/*",
+        "connection": "keep-alive",
         "x-resy-auth-token": token,
-        "accept-language": "en-US;q=1.0",
+        "accept-language": "en-US;q=1.0, fr-US;q=0.9",
         "x-resy-universal-auth": token,
-        "user-agent": RESY_UA,
+        "user-agent": "Resy/2.78 (com.resy.ResyApp; build:5185; iOS 17.3.1) Alamofire/5.8.0",
         "authorization": 'ResyAPI api_key="AIcdK2rLXG6TYwJseSbmrBAy3RP81ocd"',
         "accept-encoding": "br;q=1.0, gzip;q=0.9, deflate;q=0.8",
     }
 
     try:
-        res3 = requests.post(
-            url3, data=payload3, headers=headers3, proxies=proxies.get_proxy(), verify=False, timeout=10
-        )    
+        res3 = requests.post(url3, headers=headers, data=payload3, proxies=proxies.get_proxy(), verify=False, timeout=10)
     except Exception as e:
-        thread_error("Connection Error")
-        time.sleep(0.2)
-        return add_payment_info(s, token)
+        utils.thread_error(f"Error adding payment info 3: {e}")
+        return None
 
-    last_four = os.getenv("CARD_NUM")[-4:]
-    return last_four
+    if not res3.ok:
+        utils.thread_error(f"Error adding payment info 3: {res3.status_code, res3.text}")
+        return None
+
+    return os.getenv("CARD_NUM")[-4:]
 
 if __name__ == "__main__":
-    thread_log("Resy Account Generator")
-    thread_log("For use for ResMe research purposes only")
+    # Intro print
     print()
-    thread_error("MAKE SURE YOU HAVE A VPN ON RIGHT NOW")
+    utils.thread_log("Resy Account Generator")
+    utils.thread_log("For use for ResMe research purposes only")
     print()
+    utils.thread_error("!!! MAKE SURE YOU HAVE A VPN ENABLED !!!")
+    print()
+    print("*" * 80)
+    print()
+
+    # If were using arguments 1 = num accs, 2 = threads, 3 = acc type
     if len(sys.argv) > 1:
         num_accs = int(sys.argv[1])
         num_threads = int(sys.argv[2])
@@ -438,32 +283,30 @@ if __name__ == "__main__":
         num_threads = int(input("Number of threads?: "))
         acc_type = input("Are these elite accounts? (y/n): ")
 
-    if acc_type.lower() == "y":
+    print()
+    
+    # TODO: change this to add more account types
+    # Load in more data and set some conditions before we launch
+    if acc_type.lower().replace(" ", "") == "y":
         acc_type = "elite"
     else:
-        acc_type = "normal"
-
-    fake_domains = os.getenv("DOMAINS")
-    for domain in fake_domains.split(","):
-        domains.append(domain)
-
-    print(domains)
-    x = 0
-
-    for i in range(num_threads):
-        thread_id = f"Gen {x + 1}"
-
-        t = threading.Thread(
+        acc_type =  "normal"
+    
+    cnt = 0
+    
+    for _ in range(num_threads):
+        thread_id = f"Gen {cnt + 1}"
+        
+        
+        threading.Thread(
             target=gen,
             name=thread_id,
             args=(
                 num_accs,
                 acc_type,
             ),
-        )
-
-        thread_log(f"Starting thread {thread_id}")
-        t.start()
+        ).start()
+        
+        utils.thread_warn(f"Starting gen thread {thread_id}")
         time.sleep(0.5)
-
-        x += 1
+        cnt += 1
