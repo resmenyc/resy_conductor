@@ -16,6 +16,7 @@ class Network:
             "Resy/2.78 (com.resy.ResyApp; build:5185; iOS 17.3.1) Alamofire/5.8.0"
         )
         self.RESY_KEY = 'ResyAPI api_key="AIcdK2rLXG6TYwJseSbmrBAy3RP81ocd"'
+        self.RESY_KEY_NORM = 'ResyAPI api_key="VbWk7s3L4KiK5fzlO7JD3Q5EYolJI7n5"'
 
         # Static Values
         self.MAX_ACC_RETRYS = 5
@@ -74,10 +75,10 @@ class Network:
             "Accept": "*/*",
             "Accept-Encoding": "br;q=1.0, gzip;q=0.9, deflate;q=0.8",
             "Accept-Language": "en-US;q=1.0, fr-US;q=0.9",
-            "Authorization": self.RESY_KEY,
+            "Authorization": self.RESY_KEY_NORM,
             "Connection": "keep-alive",
             "Host": "api.resy.com",
-            "User-Agent": self.USER_AGENT,
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
             "X-Resy-Auth-Token": self.auth_token,
             "X-Resy-Universal-Auth": self.auth_token,
             "cache-control": "no-cache",
