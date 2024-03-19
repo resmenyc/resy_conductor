@@ -34,7 +34,7 @@ load_dotenv()
 # LOAD IN CLASSES
 utils = Utils()
 database = Database()
-proxiex = Proxies()
+proxies = Proxies()
 fake = Faker()
 email_gen = EmailGen()
 
@@ -56,21 +56,74 @@ STRIPE_P_UA = "stripe-ios/23.18.2; variant.legacy; PaymentSheet"
 
 def gen(num_accs, acc_type):
     failure_cnt = 0
-    
+
     try:
         cnt = 0
         for _ in range(num_accs):
-            s = requests.Session()
-            
+            network = Network("")
+
             # Generate fake information
             first_name, last_name = gen_name()
             email = email_gen.gen()
             password = gen_password()
-            
-            
-            
+            phone_num = gen_phone_num()
+
+            try:
+                create_res = network.create(first_name, last_name, email, password, phone_num)
+            except Exception as e:
+                utils.thread_error(f"Error creating account: {e}")
+                failure_cnt += 1
+                continue
+
+            auth_token = create_res.json()["user"]["token"]
+            network.set_auth_token(auth_token)
+
+            if not create_res.ok:
+                failure_cnt += 1
+                continue
+
+            try:
+                last_four = add_payment_info(network, auth_token)
+                if last_four is None:
+                    failure_cnt += 1
+                    continue
+
+                write_account_to_db(
+                    email, password, first_name, last_name, phone_num, acc_type, str(last_four)
+                )
+                cnt += 1
+
+                utils.thread_success(f"Created account {cnt}/{num_accs} | {email}")
+            except Exception as e:
+                utils.thread_error(f"Error during or after adding payment info: {e}")
+                failure_cnt += 1
+                continue
+
+        if failure_cnt > 0:
+            gen(failure_cnt, acc_type)
+
+        print()
+        utils.thread_success(f"THREAD COMPLETE, QUITTING THREAD [{threading.active_count()}]")
+
     except (KeyboardInterrupt, SystemExit):
         sys.exit(0)
+
+def write_account_to_db(email, password, first_name, last_name, phone_num, acc_type, last_four):
+    account = {
+        "email": email,
+        "password": aesCipher.encrypt(password),
+        "first_name": first_name,
+        "last_name": last_name,
+        "phone_num": phone_num,
+        "acc_type": acc_type,
+        "version": 1,
+        "active": True,
+        "suspended": False,
+        "created_at": time.time(),
+        "last_four": last_four
+    }
+
+    database.upload_account(account)
 
 def gen_name(self):    
     name = fake.name()
@@ -111,6 +164,103 @@ def gen_phone_num():
         
     return phone_num
 
+def add_payment_info(network, token):
+    url = "https://api.resy.com/3/stripe/setup_intent"
+
+    headers = {
+        "host": "api.resy.com",
+        "accept": "*/*",
+        "connection": "keep-alive",
+        "x-resy-auth-token": token,
+        "accept-encoding": "br;q=1.0, gzip;q=0.9, deflate;q=0.8",
+        "x-resy-universal-auth": token,
+        "user-agent": network.USER_AGENT,
+        "accept-language": "en-US;q=1.0, fr-US;q=0.9",
+        "authorization": network.RESY_KEY,
+    }
+
+    try:
+        res1 = network.session.post(url, headers=headers, proxies=proxies.get_proxy(), verify=False, timeout=10)
+    except Exception as e:
+        utils.thread_error(f"Error adding payment info 1: {e}")
+        return None
+
+    if not res1.ok:
+        utils.thread_error(f"Error adding payment info 1: {res1.status_code}")
+        return None
+
+    client_secret = res1.json()["client_secret"]
+    client_id = client_secret.split("_secret")[0]
+
+    url2 = f"https://api.stripe.com/v1/setup_intents/{client_id}/confirm"
+
+    headers2 = {
+        "host": "api.stripe.com",
+        "content-type": "application/x-www-form-urlencoded",
+        "accept-encoding": "gzip, deflate, br",
+        "stripe-version": "2020-08-27",
+        "user-agent": "Resy/5185 CFNetwork/1492.0.1 Darwin/23.3.0",
+        "connection": "keep-alive",
+        "accept": "*/*",
+        "accept-language": "en-US,en;q=0.9",
+        "x-stripe-user-agent": '{"os_version":"17.3.1","bindings_version":"23.21.0","lang":"objective-c","type":"iPhone16,2","model":"iPhone","vendor_identifier":"521D44E8-0B56-460D-95A4-D74D91611B1F"}',
+        "authorization": "Bearer pk_live_51JdK5FIqT2RuI7QtpZsqeG1GTMZHBTBCTr4r1MZkJJt60ybz3REl92I0uKIynSMIUMXkUlMGAU8B5pRJ0533KImO0006EPpHUI",
+    }
+
+    payload2 = {
+        "client_secret": client_secret,
+        "expand[0]": "payment_method",
+        "payment_method_data[billing_details][address][country]": "US",
+        "payment_method_data[billing_details][address][postal_code]": os.getenv(
+            "ZIP_CODE"
+        ),
+        "payment_method_data[card][cvc]": os.getenv("CARD_CVC"),
+        "payment_method_data[card][exp_month]": os.getenv("CARD_MONTH"),
+        "payment_method_data[card][exp_year]": os.getenv("CARD_YEAR"),
+        "payment_method_data[card][number]": os.getenv("CARD_NUM"),
+        "payment_method_data[payment_user_agent]": "stripe-ios/23.21.0; variant.legacy; PaymentSheet",
+        "payment_method_data[type]": "card",
+        "use_stripe_sdk": "true",
+    }
+
+    try:
+        res2 = network.session.post(url2, headers=headers2, data=payload2, proxies=proxies.get_proxy(), verify=False, timeout=10)
+    except Exception as e:
+        utils.thread_error(f"Error adding payment info 2: {e}")
+        return None
+
+    if not res2.ok:
+        utils.thread_error(f"Error adding payment info 2: {res2.status_code}")
+        return None
+
+    payment_method_id = res2.json()["payment_method"]
+
+    url3 = "https://api.resy.com/3/stripe/payment_method"
+    payload3 = f"is_default=1&stripe_payment_method_id={payment_method_id}"
+    headers = {
+        "host": "api.resy.com",
+        "content-type": "application/x-www-form-urlencoded; charset=utf-8",
+        "accept": "*/*",
+        "connection": "keep-alive",
+        "x-resy-auth-token": token,
+        "accept-language": "en-US;q=1.0, fr-US;q=0.9",
+        "x-resy-universal-auth": token,
+        "user-agent": "Resy/2.78 (com.resy.ResyApp; build:5185; iOS 17.3.1) Alamofire/5.8.0",
+        "authorization": 'ResyAPI api_key="AIcdK2rLXG6TYwJseSbmrBAy3RP81ocd"',
+        "accept-encoding": "br;q=1.0, gzip;q=0.9, deflate;q=0.8",
+    }
+
+    try:
+        res3 = network.session.post(url3, headers=headers, data=payload3, proxies=proxies.get_proxy(), verify=False, timeout=10)
+    except Exception as e:
+        utils.thread_error(f"Error adding payment info 3: {e}")
+        return None
+
+    if not res3.ok:
+        utils.thread_error(f"Error adding payment info 3: {res3.status_code}")
+        return None
+
+    return os.getenv("CARD_NUM")[-4:]
 
 if __name__ == "__main__":
     # Intro print

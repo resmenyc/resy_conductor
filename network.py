@@ -2,6 +2,7 @@ import requests
 import urllib3
 from utils import Utils
 from proxies import Proxies
+import uuid
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -67,6 +68,46 @@ class Network:
         )
 
         return response
+
+    def create(self, first_name, last_name, email, password, phone_num):
+        url = "https://api.resy.com/2/user/registration"
+        
+        headers = {
+            "host": "api.resy.com",
+            "content-type": "application/x-www-form-urlencoded; charset=utf-8",
+            "accept": "*/*",
+            "connection": "keep-alive",
+            "user-agent": self.USER_AGENT,
+            "accept-language": "en-US;q=1.0, fr-US;q=0.9",
+            "authorization": self.RESY_KEY,
+            "accept-encoding": "br;q=1.0, gzip;q=0.9, deflate;q=0.8"
+        }
+        
+        payload = {
+            "first_name": first_name,
+            "last_name": last_name,
+            "mobile_number": f"+1{phone_num}",
+            "em_address": email,
+            "policies_accept": 1,
+            "marketing_opt_in": 0,
+            "complete": 1,
+            "device_type_id": 2,
+            "device_token": str(uuid.uuid4()).upper(),
+            "isNonUS": 0,
+            "password": password
+        }
+        
+        response = self.session.post(
+            url,
+            headers=headers,
+            data=payload,
+            proxies=proxies.get_proxy(),
+            verify=False,
+            timeout=10
+        )
+        
+        return response
+
 
     def account_reservations(self):
         url = f"https://api.resy.com/3/user/reservations?limit=1&offset=1&type=upcoming&book_on_behalf_of=false"
