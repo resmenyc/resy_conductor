@@ -64,7 +64,7 @@ def gen(num_accs, acc_type):
 
             # Generate fake information
             first_name, last_name = gen_name()
-            email = email_gen.gen()
+            email = email_gen.gen(first_name, last_name, choice(domains))
             password = gen_password()
             phone_num = gen_phone_num()
 
@@ -75,12 +75,12 @@ def gen(num_accs, acc_type):
                 failure_cnt += 1
                 continue
 
-            auth_token = create_res.json()["user"]["token"]
-            network.set_auth_token(auth_token)
-
             if not create_res.ok:
                 failure_cnt += 1
                 continue
+
+            auth_token = create_res.json()["user"]["token"]
+            network.set_auth_token(auth_token)
 
             try:
                 last_four = add_payment_info(network, auth_token)
@@ -125,7 +125,7 @@ def write_account_to_db(email, password, first_name, last_name, phone_num, acc_t
 
     database.upload_account(account)
 
-def gen_name(self):    
+def gen_name():    
     name = fake.name()
     first_name = name.split(" ")[0]
 
@@ -224,7 +224,7 @@ def add_payment_info(network, token):
     }
 
     try:
-        res2 = network.session.post(url2, headers=headers2, data=payload2, proxies=proxies.get_proxy(), verify=False, timeout=10)
+        res2 = network.session.post(url2, headers=headers2, data=payload2, timeout=10)
     except Exception as e:
         utils.thread_error(f"Error adding payment info 2: {e}")
         return None
@@ -270,7 +270,7 @@ if __name__ == "__main__":
     print()
     utils.thread_error("!!! MAKE SURE YOU HAVE A VPN ENABLED !!!")
     print()
-    print("*" * 40)
+    print("*" * 80)
     print()
 
     # If were using arguments 1 = num accs, 2 = threads, 3 = acc type
