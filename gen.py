@@ -180,7 +180,7 @@ def add_payment_info(network, token):
     }
 
     try:
-        res1 = network.session.post(url, headers=headers, proxies=proxies.get_proxy(), verify=False, timeout=10)
+        res1 = requests.post(url, headers=headers, proxies=proxies.get_proxy(), verify=False, timeout=10)
     except Exception as e:
         utils.thread_error(f"Error adding payment info 1: {e}")
         return None
@@ -224,7 +224,7 @@ def add_payment_info(network, token):
     }
 
     try:
-        res2 = network.session.post(url2, headers=headers2, data=payload2, timeout=10)
+        res2 = requests.post(url2, headers=headers2, data=payload2, timeout=10)
     except Exception as e:
         utils.thread_error(f"Error adding payment info 2: {e}")
         return None
@@ -234,9 +234,8 @@ def add_payment_info(network, token):
         return None
 
     payment_method_id = res2.json()["payment_method"]
-
     url3 = "https://api.resy.com/3/stripe/payment_method"
-    payload3 = f"is_default=1&stripe_payment_method_id={payment_method_id}"
+    payload3 = f"is_default=1&stripe_payment_method_id={payment_method_id['id']}"
     headers = {
         "host": "api.resy.com",
         "content-type": "application/x-www-form-urlencoded; charset=utf-8",
@@ -251,13 +250,13 @@ def add_payment_info(network, token):
     }
 
     try:
-        res3 = network.session.post(url3, headers=headers, data=payload3, proxies=proxies.get_proxy(), verify=False, timeout=10)
+        res3 = requests.post(url3, headers=headers, data=payload3, proxies=proxies.get_proxy(), verify=False, timeout=10)
     except Exception as e:
         utils.thread_error(f"Error adding payment info 3: {e}")
         return None
 
     if not res3.ok:
-        utils.thread_error(f"Error adding payment info 3: {res3.status_code}")
+        utils.thread_error(f"Error adding payment info 3: {res3.status_code, res3.text}")
         return None
 
     return os.getenv("CARD_NUM")[-4:]
