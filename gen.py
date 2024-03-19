@@ -54,7 +54,7 @@ for domain in os.getenv("DOMAINS").split(","):
 STRIPE_UA = "Resy/4977 CFNetwork/1492.0.1 Darwin/23.3.0"
 STRIPE_P_UA = "stripe-ios/23.18.2; variant.legacy; PaymentSheet"
 
-def gen(num_accs, acc_type):
+def gen(num_accs, acc_type, child=False):
     failure_cnt = 0
 
     try:
@@ -100,10 +100,11 @@ def gen(num_accs, acc_type):
                 continue
 
         if failure_cnt > 0:
-            gen(failure_cnt, acc_type)
+            gen(failure_cnt, acc_type, child=True)
 
-        print()
-        utils.thread_success(f"THREAD COMPLETE, QUITTING THREAD [{threading.active_count()}]")
+        if not child:
+            print()
+            utils.thread_success(f"THREAD COMPLETE, QUITTING THREAD [{threading.active_count()}]")
 
     except (KeyboardInterrupt, SystemExit):
         sys.exit(0)
