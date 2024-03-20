@@ -62,7 +62,7 @@ class Network:
             url,
             data=payload,
             headers=headers,
-            proxies=proxies.get_resi_proxy(),
+            proxies=proxies.get_proxy(),
             verify=False,
             timeout=15,
         )
