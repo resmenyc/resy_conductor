@@ -121,13 +121,13 @@ def check_acc_usable(network):
         return False
 
 # https://stackoverflow.com/questions/2130016/splitting-a-list-into-n-parts-of-approximately-equal-length
-def split(a, n):
+def split_list(a, n):
     k, m = divmod(len(a), n)
     return (a[i * k + min(i, m) : (i + 1) * k + min(i + 1, m)] for i in range(n))
 
 def init():    
     # Split the list into thread_cnt lists
-    acc_lsts = list(split(accounts, THREAD_CNT))
+    acc_lsts = list(split_list(accounts, THREAD_CNT))
         
     cnt = 0
     for acc_lst in acc_lsts:
