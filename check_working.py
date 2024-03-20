@@ -80,6 +80,9 @@ def login(network, account, retrys=0):
     if not login_res.ok:
         if login_res.status_code == 419:
             utils.thread_warn(f"Account suspended {account['email']}")
+        elif login_res.status_code == 500:
+            utils.thread_warn("RATE LIMIT")
+            return login(network, account, retrys=retrys)
         else:
             utils.thread_error(f"Login failed with status code {login_res.status_code}, retrying")
             return login(network, account, retrys=retrys + 1)
