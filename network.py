@@ -3,6 +3,7 @@ import urllib3
 from utils import Utils
 from proxies import Proxies
 import uuid
+from random import choice
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -57,12 +58,14 @@ class Network:
             "X-Origin": "https://resy.com",
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
         }
+        
+        use_proxy = choice([proxies.get_proxy(), proxies.get_resi_proxy()])
 
         response = self.session.post(
             url,
             data=payload,
             headers=headers,
-            proxies=proxies.get_proxy(),
+            proxies=use_proxy,
             verify=False,
             timeout=15,
         )
