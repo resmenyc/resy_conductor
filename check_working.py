@@ -65,8 +65,8 @@ def check_working(accs):
     except (KeyboardInterrupt, SystemExit):
         sys.exit()
 
-def login(network, account, retrys=0):
-    if retrys > 20:
+def login(network, account, retrys=0, rl=0):
+    if retrys > 30:
         utils.thread_error("Login failed on max attempts, killing account")
         return None, None, None
 
@@ -75,17 +75,17 @@ def login(network, account, retrys=0):
     except Exception as e:
         utils.thread_error(f"Login failed with exception: {e}")
         time.sleep(network.ERROR_DELAY_LOGIN)
-        return login(network, account, retrys=retrys + 1)
+        return login(network, account, retrys=retrys + 1, rl=rl)
 
     if not login_res.ok:
         if login_res.status_code == 419:
             utils.thread_warn(f"Account suspended {account['email']}")
         elif login_res.status_code == 500:
-            utils.thread_warn("RATE LIMIT")
-            return login(network, account, retrys=retrys)
+            utils.thread_warn(f"RATE LIMIT {rl}")
+            return login(network, account, retrys=retrys, rl=rl + 1)
         else:
             utils.thread_error(f"Login failed with status code {login_res.status_code}, retrying")
-            return login(network, account, retrys=retrys + 1)
+            return login(network, account, retrys=retrys + 1, rl=rl)
 
         return None, None, None
     else:
