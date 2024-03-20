@@ -43,9 +43,12 @@ def init():
                 {"email": res["email"]}, {"$set": {"reviewed": True, "cancelled": True}}
             )
             utils.thread_error("Account has no valid login, cancelling")
-            discord.cancels_wh(
-                f"Cancelled a reservation for {res['email']} on {res['date']} at {res['venue_name']} [BadAccount]"
-            )
+            try:
+                discord.cancels_wh(
+                    f"Cancelled a reservation for {res['email']} on {res['date']} at {res['venue_name']} [BadAccount]"
+                )
+            except:
+                pass
             cancelled_res += 1
             delete_accs += 1
             x += 1
