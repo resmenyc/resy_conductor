@@ -127,6 +127,10 @@ def split_list(a, n):
 
 def init():    
     # Split the list into thread_cnt lists
+    print()
+    utils.thread_success(f"Initiating with {THREAD_CNT} thread(s)")
+    print()
+    
     acc_lsts = list(split_list(accounts, THREAD_CNT))
         
     cnt = 0
