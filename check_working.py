@@ -17,6 +17,8 @@ discord = Discord()
 accounts = database.get_accounts()
 shuffle(accounts)
 
+THREAD_CNT = 20
+
 def check_working(accs):
     try:
         num = 0
@@ -118,19 +120,12 @@ def check_acc_usable(network):
     else:
         return False
 
-# https://stackoverflow.com/questions/752308/split-list-into-smaller-lists-split-in-half
-def split_list(a_list):
-    half = len(a_list) // 2
-    return a_list[:half], a_list[half:]
-
 # https://stackoverflow.com/questions/2130016/splitting-a-list-into-n-parts-of-approximately-equal-length
 def split(a, n):
     k, m = divmod(len(a), n)
     return (a[i * k + min(i, m) : (i + 1) * k + min(i + 1, m)] for i in range(n))
 
-def init():
-    THREAD_CNT = 20
-    
+def init():    
     # Split the list into thread_cnt lists
     acc_lsts = list(split(accounts, THREAD_CNT))
         
