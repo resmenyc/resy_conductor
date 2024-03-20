@@ -64,7 +64,10 @@ def check_working(accs):
         print()
         end_msg = f"Finished checking {len(accounts)} accounts, deleted {delete_accs}"
         utils.thread_success(end_msg)
-        discord.logs_wh(end_msg)
+        try:
+            discord.logs_wh(end_msg)
+        except:
+            pass
     except (KeyboardInterrupt, SystemExit):
         sys.exit()
 
