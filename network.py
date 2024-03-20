@@ -55,7 +55,7 @@ class Network:
             "Origin": "https://resy.com",
             "Referer": "https://resy.com",
             "X-Origin": "https://resy.com",
-            "User-Agent": self.USER_AGENT,
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
         }
 
         response = self.session.post(
