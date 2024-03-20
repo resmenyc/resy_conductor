@@ -14,7 +14,7 @@ class Proxies:
         self.proxies = []
         self.resi_proxies = []
 
-        if not os.path.isfile("./proxies.txt") or (not os.path.isfile("./resi_proxies.txt")):
+        if (not os.path.isfile("./proxies.txt")) or (not os.path.isfile("./resi_proxies.txt")):
             utils.thread_error(
                 "No proxies.txt or resi_proxies.txt file found, please make sure you have both"
             )
@@ -66,3 +66,4 @@ class Proxies:
 
     def print_proxy_output(self):
         utils.thread_log(f"Loaded {len(self.proxies)} proxie(s)")
+        utils.thread_log(f"Loaded {len(self.resi_proxies)} residental proxie(s))")
