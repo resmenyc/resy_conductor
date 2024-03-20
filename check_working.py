@@ -123,33 +123,28 @@ def split_list(a_list):
     half = len(a_list) // 2
     return a_list[:half], a_list[half:]
 
+# https://stackoverflow.com/questions/2130016/splitting-a-list-into-n-parts-of-approximately-equal-length
+def split(a, n):
+    k, m = divmod(len(a), n)
+    return (a[i * k + min(i, m) : (i + 1) * k + min(i + 1, m)] for i in range(n))
 
 def init():
-    accs1234, accs5678 = split_list(accounts)
-    accs12, accs34 = split_list(accs1234)
-    accs56, accs78 = split_list(accs5678)
-    accs1, accs2 = split_list(accs12)
-    accs3, accs4 = split_list(accs34)
-    accs5, accs6 = split_list(accs56)
-    accs7, accs8 = split_list(accs78)
-
-    t1 = threading.Thread(target=check_working, args=(accs1,), name="Thread1")
-    t2 = threading.Thread(target=check_working, args=(accs2,), name="Thread2")
-    t3 = threading.Thread(target=check_working, args=(accs3,), name="Thread3")
-    t4 = threading.Thread(target=check_working, args=(accs4,), name="Thread4")
-    t5 = threading.Thread(target=check_working, args=(accs5,), name="Thread5")
-    t6 = threading.Thread(target=check_working, args=(accs6,), name="Thread6")
-    t7 = threading.Thread(target=check_working, args=(accs7,), name="Thread7")
-    t8 = threading.Thread(target=check_working, args=(accs8,), name="Thread8")
-
-    t1.start()
-    t2.start()
-    t3.start()
-    t4.start()
-    t5.start()
-    t6.start()
-    t7.start()
-    t8.start()
+    THREAD_CNT = 20
+    
+    # Split the list into thread_cnt lists
+    acc_lsts = list(split(accounts, THREAD_CNT))
+        
+    cnt = 0
+    for acc_lst in acc_lsts:
+        tread_id = f"Thread{cnt}"
+        threading.Thread(
+            target=check_working,
+            args=(acc_lst,),
+            name=tread_id
+        ).start()
+        
+        time.sleep(0.5)
+        cnt += 1
 
 if __name__ == "__main__":
     utils.thread_log("Script to iterate over the DB and check all the accounts\n")
