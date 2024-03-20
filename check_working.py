@@ -45,6 +45,7 @@ def check_working(accs):
                 utils.thread_error("Deleting account...")
                 delete_accs += 1
             elif not is_acc_usable:
+                utils.thread_warn("Marking account as not usable")
                 # account isnt usable, make sure we mark as such
                 database.update_account(
                     {"email": account["email"]}, {"$set": {"active": False}}
