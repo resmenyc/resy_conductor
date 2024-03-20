@@ -17,7 +17,7 @@ discord = Discord()
 accounts = database.get_accounts()
 shuffle(accounts)
 
-THREAD_CNT = 50
+THREAD_CNT = 100
 
 def check_working(accs):
     try:
