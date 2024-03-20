@@ -110,8 +110,15 @@ def login(network, account, retrys=0, rl=0):
 
     return auth_token, payment_method_id, is_acc_usable
 
-def check_acc_usable(network):
-    account_check_res = network.account_reservations()
+def check_acc_usable(network, retrys=0):
+    if retrys > 5:
+        return False
+    
+    try:
+        account_check_res = network.account_reservations()
+    except:
+        time.sleep(1)
+        return check_acc_usable(network, retrys=retrys + 1)
 
     if not account_check_res.ok:
         return False
