@@ -55,7 +55,7 @@ def check_working(accs):
                 )
 
             num += 1
-            utils.thread_success(f"Checked account {num}/{len(accs)}")
+            utils.thread_success(f"Checked account {num}/{len(accs)} [{payment_method_id}]")
             # time.sleep(1)
 
         print()
