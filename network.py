@@ -104,7 +104,7 @@ class Network:
             url,
             headers=headers,
             data=payload,
-            proxies=proxies.get_proxy(),
+            proxies=proxies.get_resi_proxy(),
             verify=False,
             timeout=10
         )
