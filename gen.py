@@ -77,6 +77,9 @@ def gen(num_accs, acc_type, child=False):
                 utils.thread_error(f"Error creating account: {e}")
                 time.sleep(randint(1, 5))
                 failure_cnt += 1
+                
+                if failure_cnt > 20:
+                    time.sleep(randint(20, 120))
                 continue
 
             if not create_res.ok:
