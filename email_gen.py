@@ -133,6 +133,6 @@ class EmailGen:
         elif chosen_case == 4:
             return f"{first_name[:1].upper()}{base_string.lower()}{randint(10, 99)}@{fake_domain.lower()}"
         elif chosen_case == 5:
-            return f"{first_name[:1]}{last_name}{base_string.lower()}@{fake_domain.lower()}"
+            return f"{first_name[:1]}{last_name}{base_string.lower()}{randint(1, 99)}@{fake_domain.lower()}"
         elif chosen_case == 6:
             return f"{first_name[:1]}{last_name}{base_string.lower()}{randint(1, 999)}@{fake_domain.lower()}"
