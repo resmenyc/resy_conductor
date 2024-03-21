@@ -1,0 +1,9 @@
+us.smartproxy.com:10000:wefrgw23678rty723y8:D6kxv2PMOve2doxyj4
+ca.smartproxy.com:20000:wefrgw23678rty723y8:D6kxv2PMOve2doxyj4
+gb.smartproxy.com:30000:wefrgw23678rty723y8:D6kxv2PMOve2doxyj4
+de.smartproxy.com:20000:wefrgw23678rty723y8:D6kxv2PMOve2doxyj4
+fr.smartproxy.com:40000:wefrgw23678rty723y8:D6kxv2PMOve2doxyj4
+se.smartproxy.com:20000:wefrgw23678rty723y8:D6kxv2PMOve2doxyj4
+nl.smartproxy.com:10000:wefrgw23678rty723y8:D6kxv2PMOve2doxyj4
+ch.smartproxy.com:29000:wefrgw23678rty723y8:D6kxv2PMOve2doxyj4
+eu.smartproxy.com:10000:wefrgw23678rty723y8:D6kxv2PMOve2doxyj4

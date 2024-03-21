@@ -96,7 +96,7 @@ def gen(num_accs, acc_type, child=False):
                 )
                 cnt += 1
 
-                utils.thread_success(f"Created account {cnt}/{num_accs} | {email}")
+                utils.thread_success(f"Created account {cnt}/{num_accs} | {email} | {acc_type}")
             except Exception as e:
                 utils.thread_error(f"Error during or after adding payment info: {e}")
                 failure_cnt += 1
