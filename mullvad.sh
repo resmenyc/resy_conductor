@@ -1,1 +1,1 @@
-while true; do sh ./mullvad_rotate.sh ; sleep 120; done
+while true; do sh ./mullvad_rotate.sh ; sleep 60; done
