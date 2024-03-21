@@ -297,8 +297,6 @@ def load_cards():
         for line in f.readlines():
             elite_cards.append(line.strip())
 
-def 
-
 if __name__ == "__main__":
     # Intro print
     print()
