@@ -75,6 +75,7 @@ def gen(num_accs, acc_type, child=False):
                 create_res = network.create(first_name, last_name, email, password, phone_num)
             except Exception as e:
                 utils.thread_error(f"Error creating account: {e}")
+                network = Network("")
                 time.sleep(randint(1, 5))
                 failure_cnt += 1
                 
