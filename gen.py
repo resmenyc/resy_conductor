@@ -50,6 +50,9 @@ if not os.getenv("DOMAINS"):
     sys.exit(1)
 for domain in os.getenv("DOMAINS").split(","):
     domains.append(domain)
+    
+normal_cards = []
+elite_cards = []
 
 STRIPE_UA = "Resy/4977 CFNetwork/1492.0.1 Darwin/23.3.0"
 STRIPE_P_UA = "stripe-ios/23.18.2; variant.legacy; PaymentSheet"
@@ -83,7 +86,7 @@ def gen(num_accs, acc_type, child=False):
             network.set_auth_token(auth_token)
 
             try:
-                last_four = add_payment_info(network, auth_token)
+                last_four = add_payment_info(network, auth_token, acc_type)
                 if last_four is None:
                     failure_cnt += 1
                     continue
@@ -165,7 +168,24 @@ def gen_phone_num():
         
     return phone_num
 
-def add_payment_info(network, token):
+def add_payment_info(network, token, acc_type):
+    if acc_type == "normal":
+        card = choice(normal_cards)
+    elif acc_type == "elite":
+        card = choice(elite_cards)
+    
+    card_parts = card.split("|")
+    
+    if len(card_parts) != 5:
+        utils.thread_error(f"Invalid card format [{card}], killing process")
+        return sys.exit(1)
+        
+    card_num = card_parts[0]
+    card_month = card_parts[1]
+    card_year = card_parts[2]
+    card_cvc = card_parts[3]
+    card_zip = card_parts[4]
+    
     url = "https://api.resy.com/3/stripe/setup_intent"
 
     headers = {
@@ -207,18 +227,16 @@ def add_payment_info(network, token):
         "x-stripe-user-agent": '{"os_version":"17.3.1","bindings_version":"23.21.0","lang":"objective-c","type":"iPhone16,2","model":"iPhone","vendor_identifier":"521D44E8-0B56-460D-95A4-D74D91611B1F"}',
         "authorization": "Bearer pk_live_51JdK5FIqT2RuI7QtpZsqeG1GTMZHBTBCTr4r1MZkJJt60ybz3REl92I0uKIynSMIUMXkUlMGAU8B5pRJ0533KImO0006EPpHUI",
     }
-
+    
     payload2 = {
         "client_secret": client_secret,
         "expand[0]": "payment_method",
         "payment_method_data[billing_details][address][country]": "US",
-        "payment_method_data[billing_details][address][postal_code]": os.getenv(
-            "ZIP_CODE"
-        ),
-        "payment_method_data[card][cvc]": os.getenv("CARD_CVC"),
-        "payment_method_data[card][exp_month]": os.getenv("CARD_MONTH"),
-        "payment_method_data[card][exp_year]": os.getenv("CARD_YEAR"),
-        "payment_method_data[card][number]": os.getenv("CARD_NUM"),
+        "payment_method_data[billing_details][address][postal_code]": card_zip,
+        "payment_method_data[card][cvc]": card_cvc,
+        "payment_method_data[card][exp_month]": card_month,
+        "payment_method_data[card][exp_year]": card_year,
+        "payment_method_data[card][number]": card_num,
         "payment_method_data[payment_user_agent]": "stripe-ios/23.21.0; variant.legacy; PaymentSheet",
         "payment_method_data[type]": "card",
         "use_stripe_sdk": "true",
@@ -262,6 +280,25 @@ def add_payment_info(network, token):
 
     return os.getenv("CARD_NUM")[-4:]
 
+def load_cards():
+    if not os.path.isfile("./normal_cards.txt"):
+        utils.thread_error("No normal_cards.txt found")
+        sys.exit(1)
+        
+    with open("normal_cards.txt", "r") as f:
+        for line in f.readlines():
+            normal_cards.append(line.strip())
+    
+    if not os.path.isfile("./elite_cards.txt"):
+        utils.thread_error("No elite_cards.txt found")
+        sys.exit(1)
+    
+    with open("elite_cards.txt", "r") as f:
+        for line in f.readlines():
+            elite_cards.append(line.strip())
+
+def 
+
 if __name__ == "__main__":
     # Intro print
     print()
@@ -272,41 +309,46 @@ if __name__ == "__main__":
     print()
     print("*" * 80)
     print()
+    
+    load_cards()
 
-    # If were using arguments 1 = num accs, 2 = threads, 3 = acc type
-    if len(sys.argv) > 1:
-        num_accs = int(sys.argv[1])
-        num_threads = int(sys.argv[2])
-        acc_type = sys.argv[3]
-    else:
-        num_accs = int(input("How many accounts to create per thread?: "))
-        num_threads = int(input("Number of threads?: "))
-        acc_type = input("Are these elite accounts? (y/n): ")
-
+    num_accs_normal = int(input("How many NORMAL accounts to create per thread?: "))
+    num_accs_elite = int(input("How many ELITE accounts to create per thread?: "))
+    num_threads = int(input("Number of threads?: "))
     print()
     
-    # TODO: change this to add more account types
-    # Load in more data and set some conditions before we launch
-    if acc_type.lower().replace(" ", "") == "y":
-        acc_type = "elite"
-    else:
-        acc_type =  "normal"
-    
     cnt = 0
+    if num_accs_normal > 0:
+        for _ in range(num_threads):
+            thread_id = f"Gen Normal {cnt + 1}"
+            
+            
+            threading.Thread(
+                target=gen,
+                name=thread_id,
+                args=(
+                    num_accs_normal,
+                    "normal",
+                ),
+            ).start()
+            
+            utils.thread_warn(f"Starting normal gen thread {thread_id}")
+            time.sleep(0.5)
+            cnt += 1
     
-    for _ in range(num_threads):
-        thread_id = f"Gen {cnt + 1}"
-        
-        
-        threading.Thread(
-            target=gen,
-            name=thread_id,
-            args=(
-                num_accs,
-                acc_type,
-            ),
-        ).start()
-        
-        utils.thread_warn(f"Starting gen thread {thread_id}")
-        time.sleep(0.5)
-        cnt += 1
+    if num_accs_elite > 0:
+        for _ in range(num_threads):
+            thread_id = f"Gen Elite {cnt + 1}"
+            
+            threading.Thread(
+                target=gen,
+                name=thread_id,
+                args=(
+                    num_accs_elite,
+                    "elite",
+                ),
+            ).start()
+            
+            utils.thread_warn(f"Starting elite gen thread {thread_id}")
+            time.sleep(0.5)
+            cnt += 1

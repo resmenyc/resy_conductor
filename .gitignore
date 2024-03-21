@@ -178,4 +178,5 @@ chromedriver
 accs.txt
 accounts.txt
 proxies.txt
+*_cards.txt
 # End of https://www.toptal.com/developers/gitignore/api/python
