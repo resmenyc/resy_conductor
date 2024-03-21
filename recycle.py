@@ -6,7 +6,7 @@ import schedule
 import os
 from discord_helper import Discord
 
-SUSPEND_FACTOR = 6
+SUSPEND_FACTOR = 5
 
 database = Database()
 utils = Utils()
