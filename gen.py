@@ -309,6 +309,9 @@ if __name__ == "__main__":
     print()
     
     load_cards()
+    utils.thread_log(f"Loaded {len(normal_cards)} normal card(s)")
+    utils.thread_log(f"Loaded {len(elite_cards)} elite card(s)")
+    print()
 
     num_accs_normal = int(input("How many NORMAL accounts to create per thread?: "))
     num_accs_elite = int(input("How many ELITE accounts to create per thread?: "))
