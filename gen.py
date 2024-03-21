@@ -334,7 +334,7 @@ if __name__ == "__main__":
             ).start()
             
             utils.thread_warn(f"Starting normal gen thread {thread_id}")
-            time.sleep(0.5)
+            time.sleep(0.1)
             cnt += 1
     
     if num_accs_elite > 0:
@@ -351,5 +351,5 @@ if __name__ == "__main__":
             ).start()
             
             utils.thread_warn(f"Starting elite gen thread {thread_id}")
-            time.sleep(0.5)
+            time.sleep(0.1)
             cnt += 1
