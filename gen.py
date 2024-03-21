@@ -278,7 +278,7 @@ def add_payment_info(network, token, acc_type):
         utils.thread_error(f"Error adding payment info 3: {res3.status_code, res3.text}")
         return None
 
-    return os.getenv("CARD_NUM")[-4:]
+    return card_num[-4:]
 
 def load_cards():
     if not os.path.isfile("./normal_cards.txt"):
