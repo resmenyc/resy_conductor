@@ -59,7 +59,7 @@ STRIPE_P_UA = "stripe-ios/23.18.2; variant.legacy; PaymentSheet"
 
 def gen(num_accs, acc_type, child=False):
     failure_cnt = 0
-
+    err_cnt = 0
     try:
         cnt = 0
         for _ in range(num_accs):
@@ -78,8 +78,9 @@ def gen(num_accs, acc_type, child=False):
                 network = Network("")
                 time.sleep(randint(1, 5))
                 failure_cnt += 1
+                err_cnt += 1
                 
-                if failure_cnt > 20:
+                if err_cnt > 20:
                     time.sleep(randint(20, 120))
                 continue
 
@@ -102,9 +103,11 @@ def gen(num_accs, acc_type, child=False):
                 cnt += 1
 
                 utils.thread_success(f"Created account {cnt}/{num_accs} | {email} | {acc_type}")
+                err_cnt = 0
             except Exception as e:
                 utils.thread_error(f"Error during or after adding payment info: {e}")
                 failure_cnt += 1
+                err_cnt += 1
                 continue
 
         if failure_cnt > 0:
