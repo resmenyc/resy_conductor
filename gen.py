@@ -209,7 +209,7 @@ def add_payment_info(network, token, acc_type):
     }
 
     try:
-        res1 = requests.post(url, headers=headers, proxies=proxies.get_proxy(), verify=False, timeout=10)
+        res1 = requests.post(url, headers=headers, proxies=proxies.get_mobile_proxy(), verify=False, timeout=10)
     except Exception as e:
         utils.thread_error(f"Error adding payment info 1: {e}")
         return None
@@ -278,7 +278,7 @@ def add_payment_info(network, token, acc_type):
     }
 
     try:
-        res3 = requests.post(url3, headers=headers, data=payload3, proxies=proxies.get_proxy(), verify=False, timeout=10)
+        res3 = requests.post(url3, headers=headers, data=payload3, proxies=proxies.get_mobile_proxy(), verify=False, timeout=10)
     except Exception as e:
         utils.thread_error(f"Error adding payment info 3: {e}")
         return None
