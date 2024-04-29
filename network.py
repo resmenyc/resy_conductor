@@ -17,7 +17,7 @@ class Network:
     def __init__(self, proxy):
         # Config keys
         self.USER_AGENT = (
-            "Resy/2.78 (com.resy.ResyApp; build:5185; iOS 17.3.1) Alamofire/5.8.0"
+            "Resy/2.81 (com.resy.ResyApp; build:5433; iOS 17.4.1) Alamofire/5.8.0"
         )
         self.RESY_KEY = 'ResyAPI api_key="AIcdK2rLXG6TYwJseSbmrBAy3RP81ocd"'
         self.RESY_KEY_NORM = 'ResyAPI api_key="VbWk7s3L4KiK5fzlO7JD3Q5EYolJI7n5"'

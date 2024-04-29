@@ -100,7 +100,7 @@ def gen(num_accs, acc_type, child=False):
                 write_account_to_db(
                     email, password, first_name, last_name, phone_num, acc_type, str(last_four)
                 )
-                cnt += 1
+                cnt += 1    
 
                 utils.thread_success(f"Created account {cnt}/{num_accs} | {email} | {acc_type}")
                 err_cnt = 0
@@ -171,7 +171,7 @@ def gen_phone_num():
 
     nyc_codes = ["917", "347", "212", "646"]
     use_nyc_codes_odds = randint(0, 100)
-    if use_nyc_codes_odds > 60:
+    if use_nyc_codes_odds > 50:
         phone_num = phone_num.replace(phone_num[0:3], choice(nyc_codes), 1)
         
     return phone_num
