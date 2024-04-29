@@ -62,25 +62,24 @@ class Network:
 
         headers = {
             "Accept": "application/json, text/plain, */*",
-            "Accept-Encoding": "gzip, deflate, br",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
             "Accept-Language": "en-US,en;q=0.9",
-            "Authorization": self.RESY_KEY,
+            "Authorization": self.RESY_KEY_NORM,
             "Cache-Control": "no-cache",
             "Content-Type": "application/x-www-form-urlencoded",
-            "Connection": "keep-alive",
+            "Dnt": "1",
             "Origin": "https://resy.com",
-            "Referer": "https://resy.com",
+            "Priority": "u=1, i",
+            "Referer": "https://resy.com/",
+            "User-Agent": self.get_random_ua(),
             "X-Origin": "https://resy.com",
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
         }
-
-        use_proxy = choice([proxies.get_proxy(), proxies.get_resi_proxy()])
 
         response = self.session.post(
             url,
             data=payload,
             headers=headers,
-            proxies=use_proxy,
+            proxies=proxies.get_mobile_proxy(),
             verify=False,
             timeout=15,
         )
