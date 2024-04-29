@@ -50,12 +50,12 @@ if not os.getenv("DOMAINS"):
     sys.exit(1)
 for domain in os.getenv("DOMAINS").split(","):
     domains.append(domain)
-    
+
 normal_cards = []
 elite_cards = []
 
-STRIPE_UA = "Resy/4977 CFNetwork/1492.0.1 Darwin/23.3.0"
-STRIPE_P_UA = "stripe-ios/23.18.2; variant.legacy; PaymentSheet"
+STRIPE_UA = "Resy/5433 CFNetwork/1494.0.7 Darwin/23.4.0"
+STRIPE_P_UA = "stripe-ios/23.25.0; variant.legacy; PaymentSheet"
 
 def gen(num_accs, acc_type, child=False):
     failure_cnt = 0
@@ -181,19 +181,19 @@ def add_payment_info(network, token, acc_type):
         card = choice(normal_cards)
     elif acc_type == "elite":
         card = choice(elite_cards)
-    
+
     card_parts = card.split("|")
-    
+
     if len(card_parts) != 5:
         utils.thread_error(f"Invalid card format [{card}], killing process")
         return sys.exit(1)
-        
+
     card_num = card_parts[0]
     card_month = card_parts[1]
     card_year = card_parts[2]
     card_cvc = card_parts[3]
     card_zip = card_parts[4]
-    
+
     url = "https://api.resy.com/3/stripe/setup_intent"
 
     headers = {
@@ -223,19 +223,21 @@ def add_payment_info(network, token, acc_type):
 
     url2 = f"https://api.stripe.com/v1/setup_intents/{client_id}/confirm"
 
+    vendor_id = str(uuid.uuid4()).upper()
+
     headers2 = {
-        "host": "api.stripe.com",
-        "content-type": "application/x-www-form-urlencoded",
-        "accept-encoding": "gzip, deflate, br",
-        "stripe-version": "2020-08-27",
-        "user-agent": "Resy/5185 CFNetwork/1492.0.1 Darwin/23.3.0",
-        "connection": "keep-alive",
-        "accept": "*/*",
-        "accept-language": "en-US,en;q=0.9",
-        "x-stripe-user-agent": '{"os_version":"17.3.1","bindings_version":"23.21.0","lang":"objective-c","type":"iPhone16,2","model":"iPhone","vendor_identifier":"521D44E8-0B56-460D-95A4-D74D91611B1F"}',
-        "authorization": "Bearer pk_live_51JdK5FIqT2RuI7QtpZsqeG1GTMZHBTBCTr4r1MZkJJt60ybz3REl92I0uKIynSMIUMXkUlMGAU8B5pRJ0533KImO0006EPpHUI",
+        "Accept": "*/*",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Authorization": "Bearer pk_live_51JdK5FIqT2RuI7QtpZsqeG1GTMZHBTBCTr4r1MZkJJt60ybz3REl92I0uKIynSMIUMXkUlMGAU8B5pRJ0533KImO0006EPpHUI",
+        "Connection": "keep-alive",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Host": "api.stripe.com",
+        "Stripe-Version": "2020-08-27",
+        "User-Agent": STRIPE_UA,
+        "X-Stripe-User-Agent": '{"type":"iPhone16,2","bindings_version":"23.25.0","lang":"objective-c","vendor_identifier":"' + vendor_id + '","os_version":"17.4.1","model":"iPhone"}'
     }
-    
+
     payload2 = {
         "client_secret": client_secret,
         "expand[0]": "payment_method",
@@ -245,7 +247,7 @@ def add_payment_info(network, token, acc_type):
         "payment_method_data[card][exp_month]": card_month,
         "payment_method_data[card][exp_year]": card_year,
         "payment_method_data[card][number]": card_num,
-        "payment_method_data[payment_user_agent]": "stripe-ios/23.21.0; variant.legacy; PaymentSheet",
+        "payment_method_data[payment_user_agent]": "stripe-ios/23.25.0; variant.legacy; PaymentSheet",
         "payment_method_data[type]": "card",
         "use_stripe_sdk": "true",
     }
@@ -268,10 +270,9 @@ def add_payment_info(network, token, acc_type):
         "content-type": "application/x-www-form-urlencoded; charset=utf-8",
         "accept": "*/*",
         "connection": "keep-alive",
-        "x-resy-auth-token": token,
         "accept-language": "en-US;q=1.0, fr-US;q=0.9",
         "x-resy-universal-auth": token,
-        "user-agent": "Resy/2.78 (com.resy.ResyApp; build:5185; iOS 17.3.1) Alamofire/5.8.0",
+        "user-agent": network.USER_AGENT,
         "authorization": 'ResyAPI api_key="AIcdK2rLXG6TYwJseSbmrBAy3RP81ocd"',
         "accept-encoding": "br;q=1.0, gzip;q=0.9, deflate;q=0.8",
     }
