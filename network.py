@@ -75,7 +75,7 @@ class Network:
             "X-Origin": "https://resy.com",
         }
 
-        response = self.session.post(
+        response = requests.post(
             url,
             data=payload,
             headers=headers,
