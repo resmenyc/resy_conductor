@@ -3,6 +3,8 @@ import urllib3
 from utils import Utils
 from proxies import Proxies
 import uuid
+import os
+import sys
 from random import choice
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -31,6 +33,19 @@ class Network:
         self.session = requests.Session()
         self.proxies = proxy
 
+        self.normal_user_agents = []
+
+        if not os.path.isfile("./uas.txt"):
+            utils.thread_error("No user agent file found")
+            sys.exit(1)
+
+        with open("./uas.txt", "r") as f:
+            for line in f:
+                self.normal_user_agents.append(line.strip())
+
+    def get_random_ua(self):
+        return choice(self.normal_user_agents)
+
     def get_session(self):
         return self.session
 
@@ -47,25 +62,24 @@ class Network:
 
         headers = {
             "Accept": "application/json, text/plain, */*",
-            "Accept-Encoding": "gzip, deflate, br",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
             "Accept-Language": "en-US,en;q=0.9",
-            "Authorization": self.RESY_KEY,
+            "Authorization": self.RESY_KEY_NORM,
             "Cache-Control": "no-cache",
             "Content-Type": "application/x-www-form-urlencoded",
-            "Connection": "keep-alive",
+            "Dnt": "1",
             "Origin": "https://resy.com",
-            "Referer": "https://resy.com",
+            "Priority": "u=1, i",
+            "Referer": "https://resy.com/",
+            "User-Agent": self.get_random_ua(),
             "X-Origin": "https://resy.com",
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
         }
-        
-        use_proxy = choice([proxies.get_proxy(), proxies.get_resi_proxy()])
 
         response = self.session.post(
             url,
             data=payload,
             headers=headers,
-            proxies=use_proxy,
+            proxies=proxies.get_mobile_proxy(),
             verify=False,
             timeout=15,
         )
@@ -74,7 +88,7 @@ class Network:
 
     def create(self, first_name, last_name, email, password, phone_num):
         url = "https://api.resy.com/2/user/registration"
-        
+
         headers = {
             "host": "api.resy.com",
             "content-type": "application/x-www-form-urlencoded; charset=utf-8",
@@ -85,7 +99,7 @@ class Network:
             "authorization": self.RESY_KEY,
             "accept-encoding": "br;q=1.0, gzip;q=0.9, deflate;q=0.8"
         }
-        
+
         payload = {
             "first_name": first_name,
             "last_name": last_name,
@@ -99,7 +113,7 @@ class Network:
             "isNonUS": 0,
             "password": password
         }
-        
+
         response = self.session.post(
             url,
             headers=headers,
@@ -108,9 +122,8 @@ class Network:
             verify=False,
             timeout=10
         )
-        
-        return response
 
+        return response
 
     def account_reservations(self):
         url = f"https://api.resy.com/3/user/reservations?limit=1&offset=1&type=upcoming&book_on_behalf_of=false"
