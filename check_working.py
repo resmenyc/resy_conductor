@@ -53,7 +53,6 @@ def check_working(accs):
                     {"email": account["email"]}, {"$set": {"active": False}}
                 )
             else:
-                utils.thread_success("Account is usable!")
                 database.update_account(
                     {"email": account["email"]}, {"$set": {"active": True}}
                 )
