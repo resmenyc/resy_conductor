@@ -160,8 +160,6 @@ if __name__ == "__main__":
     utils.thread_log("Running every wednesday at 2:00am")
 
     schedule.every().wednesday.at("02:00", "America/New_York").do(init)
-    schedule.every().monday.at("02:00", "America/New_York").do(init)
-    schedule.every().friday.at("02:00", "America/New_York").do(init)
 
     if os.getenv("DEBUG"):
         init()
